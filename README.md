@@ -40,7 +40,7 @@ O **BackOverrides** resolve isso através de um **Core agnóstico em TypeScript*
 
 ---
 
-## 🏢 Cenário Real Enterprise: Single-SPA + Import Maps + BFF + Microserviços
+## 🏢 Cenário Real: Single-SPA + Import Maps + BFF + Microserviços
 
 Este é o cenário mais comum e real na vida de desenvolvedores corporativos:
 

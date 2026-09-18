@@ -1,4 +1,5 @@
 import { setupBackOverrides, setupFetchInterceptor } from './index.js';
+import { discoverCliUrl } from './port-discovery.js';
 import type { BackOverridesConfig } from '@back-overrides/core';
 
 declare global {
@@ -24,7 +25,11 @@ if (typeof window !== 'undefined' && window.__BACK_OVERRIDES_INITIAL_CONFIG__) {
 (async () => {
   if (typeof window === 'undefined') return;
 
-  const cliUrl = window.__BACK_OVERRIDES_CLI_URL || 'http://localhost:8888';
+  let cliUrl = window.__BACK_OVERRIDES_CLI_URL;
+  if (!cliUrl) {
+    cliUrl = await discoverCliUrl();
+    window.__BACK_OVERRIDES_CLI_URL = cliUrl;
+  }
   const initialConfig = window.__BACK_OVERRIDES_INITIAL_CONFIG__;
 
   try {

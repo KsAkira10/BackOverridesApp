@@ -52,6 +52,21 @@ export class ProxyHandler {
     const originalUrl = clientReq.url || '/';
 
     // 1. Check for internal BackOverrides endpoints
+    if (originalUrl === '/__back-overrides/status' || originalUrl === '/__back-overrides/health') {
+      const corsHeaders = getCorsResponseHeaders(this.config.cors, clientReq.headers);
+      clientRes.writeHead(200, {
+        'Content-Type': 'application/json',
+        ...corsHeaders,
+      });
+      clientRes.end(JSON.stringify({
+        status: 'ok',
+        app: 'back-overrides',
+        port: this.config.port,
+        remote: this.config.remote,
+      }, null, 2));
+      return;
+    }
+
     if (originalUrl === '/__back-overrides/rules') {
       const corsHeaders = getCorsResponseHeaders(this.config.cors, clientReq.headers);
       clientRes.writeHead(200, {
@@ -68,7 +83,7 @@ export class ProxyHandler {
       const scriptPath = this.resolveClientScriptPath(isEsm ? 'esm' : 'iife');
       if (scriptPath && fs.existsSync(scriptPath)) {
         const rawContent = fs.readFileSync(scriptPath, 'utf-8');
-        const initialConfigCode = `if (typeof window !== "undefined") { window.__BACK_OVERRIDES_INITIAL_CONFIG__ = ${JSON.stringify(this.config)}; }\n`;
+        const initialConfigCode = `if (typeof window !== "undefined") {\n  window.__BACK_OVERRIDES_INITIAL_CONFIG__ = ${JSON.stringify(this.config)};\n  window.__BACK_OVERRIDES_CLI_URL = window.__BACK_OVERRIDES_CLI_URL || 'http://localhost:${this.config.port}';\n}\n`;
         const content = initialConfigCode + rawContent;
         clientRes.writeHead(200, {
           'Content-Type': 'application/javascript; charset=utf-8',

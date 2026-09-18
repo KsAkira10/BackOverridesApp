@@ -3,11 +3,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   const rulesContainer = document.getElementById('rules-container');
   const btnSync = document.getElementById('btn-sync');
   const statusMsg = document.getElementById('status-msg');
+  const portDot = document.getElementById('port-dot');
+  const portText = document.getElementById('port-text');
 
   // Load state
   const data = await chrome.storage.local.get(['enabled', 'rules', 'cliUrl']);
   toggle.checked = data.enabled !== undefined ? data.enabled : true;
   renderRules(data.rules || []);
+  updatePortDisplay(data.cliUrl || 'http://localhost:8888', true);
+
+  // Check live status on popup open
+  chrome.runtime.sendMessage({ type: 'GET_CLI_STATUS' }, (res) => {
+    if (res) {
+      updatePortDisplay(res.cliUrl, res.online);
+    }
+  });
 
   toggle.addEventListener('change', async () => {
     await chrome.storage.local.set({ enabled: toggle.checked });
@@ -15,18 +25,34 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   btnSync.addEventListener('click', () => {
-    showStatus('Sincronizando com CLI...', '');
+    showStatus('Buscando proxy BackOverrides...', '');
     chrome.runtime.sendMessage({ type: 'SYNC_FROM_CLI' }, (response) => {
       if (response && response.success) {
-        showStatus(`Sincronizado! ${response.count} regra(s) atualizadas.`, 'success');
+        updatePortDisplay(response.cliUrl, true);
+        showStatus(`Sincronizado na porta ${response.port}! (${response.count} regras)`, 'success');
         chrome.storage.local.get(['rules'], (res) => {
           renderRules(res.rules || []);
         });
       } else {
-        showStatus(`Erro ao conectar: ${response?.error || 'CLI offline'}`, 'error');
+        updatePortDisplay(data.cliUrl || 'http://localhost:8888', false);
+        showStatus(`Erro: ${response?.error || 'CLI offline'}`, 'error');
       }
     });
   });
+
+  function updatePortDisplay(cliUrl, online) {
+    try {
+      const url = new URL(cliUrl);
+      const hostPort = `${url.hostname}:${url.port || (url.protocol === 'https:' ? '443' : '80')}`;
+      portText.textContent = online ? `CLI: ${hostPort} (Ativo)` : `CLI: ${hostPort} (Offline)`;
+      if (portDot) {
+        portDot.className = online ? 'badge-dot' : 'badge-dot offline';
+      }
+      btnSync.textContent = `🔄 Sincronizar (${hostPort})`;
+    } catch {
+      portText.textContent = `CLI: ${cliUrl}`;
+    }
+  }
 
   function renderRules(rules) {
     if (!rules || rules.length === 0) {
@@ -52,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (type === 'success') {
       setTimeout(() => {
         statusMsg.textContent = '';
-      }, 3000);
+      }, 3500);
     }
   }
 
@@ -60,3 +86,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     return (str || '').replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
   }
 });
+

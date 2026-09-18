@@ -25,10 +25,10 @@ const server = http.createServer((req, res) => {
     res.end(
       JSON.stringify({
         user: 'Jane Doe',
-        email: 'jane.doe@enterprise.corp',
+        email: 'jane.doe@example.com',
         role: 'Standard User',
         environment: 'Cloud Production Cluster (Port 9001)',
-        activeTenant: 'Global-Enterprise',
+        activeTenant: 'Global-Production',
       })
     );
     return;
@@ -41,7 +41,7 @@ const server = http.createServer((req, res) => {
       JSON.stringify({
         source: 'Remote Cloud API (Port 9001)',
         items: [
-          { id: 'srv-101', name: 'Enterprise Cloud DB v16', price: '$299/mo', stock: 'Unlimited' },
+          { id: 'srv-101', name: 'Cloud DB v16', price: '$299/mo', stock: 'Unlimited' },
           { id: 'srv-102', name: 'Dedicated Kubernetes Cluster', price: '$850/mo', stock: 'Available' },
           { id: 'srv-103', name: 'Global CDN Acceleration', price: '$99/mo', stock: 'Instant' },
         ],
@@ -72,7 +72,7 @@ const server = http.createServer((req, res) => {
   // 4. OAuth Authorize (Legacy Cloud IdP)
   if (pathname === '/bff/core/v1/oauth2/authorize') {
     res.writeHead(302, {
-      Location: 'https://idp.enterprise-cloud.corp/login?client_id=legacy_portal_app',
+      Location: 'https://idp.remote-cloud.io/login?client_id=legacy_portal_app',
     });
     res.end();
     return;

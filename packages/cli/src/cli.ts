@@ -5,6 +5,7 @@ import pc from 'picocolors';
 import YAML from 'yaml';
 import { generateStarterConfig, loadConfig } from './loader.js';
 import { startProxyServer } from './server.js';
+import { getActiveRuntimeInfo } from './runtime.js';
 
 const program = new Command();
 
@@ -14,7 +15,8 @@ program
   .version('0.1.0')
   .option('-r, --remote <url>', 'Remote base API URL (e.g. https://api.example.com)')
   .option('-l, --local <url>', 'Local base target URL (default: http://localhost:3000)')
-  .option('-p, --port <port>', 'Port on which the proxy will listen (default: 8080)')
+  .option('-p, --port <port>', 'Port on which the proxy will listen (default: 8888 or next available)')
+  .option('--no-auto-port', 'Disable automatic port fallback if port is in use')
   .option('-c, --config <file>', 'Path to custom config file (JSON or YAML)')
   .option('-o, --override <rules...>', 'Selective override rules (e.g. "POST /v1/users")')
   .option('--no-cors', 'Disable automated CORS injection and preflight handling')
@@ -60,7 +62,7 @@ program
   .description('Display loaded rules and configuration without starting the proxy')
   .option('-r, --remote <url>', 'Remote base API URL (e.g. https://api.example.com)')
   .option('-l, --local <url>', 'Local base target URL (default: http://localhost:3000)')
-  .option('-p, --port <port>', 'Port on which the proxy will listen (default: 8080)')
+  .option('-p, --port <port>', 'Port on which the proxy will listen (default: 8888)')
   .option('-c, --config <file>', 'Path to custom config file')
   .option('-o, --override <rules...>', 'Selective override rules (e.g. "POST /v1/users")')
   .action((options, cmd) => {
@@ -99,12 +101,16 @@ program
 program
   .command('snippet')
   .description('Print client-side injection snippets for your frontend or browser DevTools')
-  .option('-p, --port <port>', 'Proxy port (default: 8888 or from config)', '8888')
+  .option('-p, --port <port>', 'Proxy port (detected automatically from running proxy if omitted)')
   .action((options) => {
-    const port = options.port || '8888';
+    const activeRuntime = getActiveRuntimeInfo();
+    const port = options.port || (activeRuntime ? String(activeRuntime.port) : '8888');
     const clientUrl = `http://localhost:${port}/__back-overrides/client.js`;
 
     console.log(pc.bold(pc.cyan('\n⚡ BackOverrides - Frontend Injection Snippets')));
+    if (activeRuntime && !options.port) {
+      console.log(pc.dim(`(Detected active BackOverrides proxy running on port ${pc.bold(port)})`));
+    }
     console.log(pc.dim('Use one of the options below to activate BackOverrides without changing remote URLs in your frontend code:\n'));
 
     console.log(pc.bold(pc.green('1. DevTools Console (Instant - No project code changes)')));
