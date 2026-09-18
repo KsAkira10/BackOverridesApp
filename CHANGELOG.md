@@ -2,6 +2,24 @@
 
 Todas as mudanças notáveis no projeto **BackOverrides** são documentadas neste arquivo de acordo com as diretrizes do [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [v0.2.0] - 2026-09-18
+
+### ✨ Features
+
+- **ci**: implement semantic versioning, changelog generation, and RC pipelines ([f4d3ff4](https://github.com/KsAkira10/BackOverridesApp/commit/f4d3ff40f6984ddc041a946485e36bcc9d430734))
+- **docs**: add internationalization (pt-BR default and en) to docs and GitHub Pages ([476e191](https://github.com/KsAkira10/BackOverridesApp/commit/476e191142aac874e7c95e3af6d7847a7cec2824))
+
+### 🐛 Bug Fixes
+
+- **ci**: encode forbidden patterns in base64 and exclude ci.yml to prevent false positive self-triggering in guardrails ([3fbcef4](https://github.com/KsAkira10/BackOverridesApp/commit/3fbcef4306aa3f0c0807220a5b0b95a0a4913ba7))
+
+### 🧰 Maintenance & Other Changes
+
+- *(docs)* **templates**: add issue templates for bugs, security and features, and enrich PR template with visual evidence guidance ([197a819](https://github.com/KsAkira10/BackOverridesApp/commit/197a819420cabc584aa77b5dcaec94afccd728b8))
+- *(docs)* **contributing**: add contributor guide, PR template with guardrails, and GitHub Copilot review instructions ([2eb4567](https://github.com/KsAkira10/BackOverridesApp/commit/2eb4567ebfc623e65b7cb9770f8bed8a6dd71ac6))
+- *(docs)* **readme**: add dynamic badges for releases, packages, build status, and docs link ([3f40ed3](https://github.com/KsAkira10/BackOverridesApp/commit/3f40ed34e684f7c4d6405f6318adb93b123c396b))
+
+
 ## [v0.1.0] - 2026-09-18
 
 ### ✨ Features

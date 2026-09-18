@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "BackOverrides - Endpoint Redirector",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Intercepta e redireciona endpoints específicos para localhost sem alterar URLs no frontend, com resolução automática de CORS.",
   "permissions": [
     "declarativeNetRequest",
