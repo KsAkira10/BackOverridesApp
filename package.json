@@ -1,0 +1,23 @@
+{
+  "name": "back-overrides-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Smart endpoint interceptor and local redirector with automated CORS",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run --workspace=@back-overrides/core build && npm run --workspace=@back-overrides/client build && npm run --workspace=@back-overrides/cli build",
+    "test": "npm run --workspace=@back-overrides/core test && npm run --workspace=@back-overrides/client test && npm run --workspace=@back-overrides/cli test",
+    "start": "npm run --workspace=@back-overrides/cli start",
+    "demo": "bash examples/run-demo.sh",
+    "demo:single-spa": "bash examples/single-spa-demo/run-single-spa-demo.sh",
+    "clean": "rm -rf packages/*/dist packages/*/node_modules node_modules"
+  },
+  "devDependencies": {
+    "@types/node": "^18.14.2",
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3"
+  }
+}

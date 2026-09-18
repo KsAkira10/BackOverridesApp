@@ -1,0 +1,21 @@
+{
+  "port": 8080,
+  "remote": "http://localhost:4000",
+  "local": "http://localhost:3000",
+  "cors": {
+    "enabled": true,
+    "credentials": true
+  },
+  "overrides": [
+    {
+      "methods": ["POST"],
+      "path": "/v1/users",
+      "description": "Intercepts POST /v1/users and redirects to localhost:3000, while GET /v1/users still goes to remote API"
+    },
+    {
+      "methods": ["GET"],
+      "path": "/v1/users/:id",
+      "description": "Intercepts specific user lookups by dynamic id"
+    }
+  ]
+}

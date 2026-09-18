@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enterprise Portal (Single-SPA) + BackOverrides Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #0b0f19;
+      --bg-surface: #111827;
+      --bg-card: #1e293b;
+      --border-subtle: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-cyan: #38bdf8;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Single-SPA Root Shell Header */
+    .app-shell-header {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .badge-spa {
+      background: #0284c7;
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .control-panel {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--bg-card);
+      padding: 6px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border-subtle);
+      font-size: 13px;
+    }
+    .switch-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #475569; transition: .2s; border-radius: 22px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+      background-color: white; transition: .2s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--accent-emerald); }
+    input:checked + .slider:before { transform: translateX(18px); }
+
+    /* Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 860px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-main);
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+    }
+    .mf-tag {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .mf-remote { background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.3); }
+    .mf-local { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
+
+    .btn {
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .btn-emerald { background: #059669; }
+    .btn-emerald:hover { background: #047857; }
+    .btn-amber { background: #d97706; }
+    .btn-amber:hover { background: #b45309; }
+
+    .architecture-box {
+      background: #0f172a;
+      border: 1px dashed var(--border-subtle);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .architecture-box strong { color: var(--text-main); }
+
+    /* Inspector Log Area */
+    .inspector {
+      background: #090d16;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      height: 480px;
+      overflow: hidden;
+    }
+    .inspector-header {
+      background: #111827;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .log-stream {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .log-entry {
+      background: #131d31;
+      border-left: 3px solid var(--accent-cyan);
+      border-radius: 6px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      animation: fadeIn 0.3s ease;
+    }
+    .log-entry.override {
+      border-left-color: var(--accent-emerald);
+      background: #0f2420;
+    }
+    .log-entry.remote {
+      border-left-color: var(--accent-cyan);
+      background: #0f1d2c;
+    }
+    .log-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+    .log-title {
+      font-weight: 600;
+      color: var(--text-main);
+      word-break: break-all;
+    }
+    .log-json {
+      background: #0b0f19;
+      border-radius: 4px;
+      padding: 8px;
+      color: #cbd5e1;
+      max-height: 140px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    .badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-override { background: #10b981; color: #022c22; }
+    .badge-remote { background: #38bdf8; color: #082f49; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Single-SPA Root Shell Header -->
+  <header class="app-shell-header">
+    <div class="brand">
+      <span>Enterprise Portal Shell</span>
+      <span class="badge-spa">Single-SPA</span>
+    </div>
+
+    <div class="control-panel">
+      <span>BackOverrides Interceptor:</span>
+      <label class="switch-label">
+        <span class="switch">
+          <input type="checkbox" id="toggle-backoverrides" checked>
+          <span class="slider"></span>
+        </span>
+        <span id="status-label" style="color: var(--accent-emerald);">ATIVADO (localhost:8889)</span>
+      </label>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Left Column: Single-SPA Microfrontends -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+
+      <!-- MFE 1: Shell & Session -->
+      <div class="card">
+        <div class="card-title">
+          <span>Microfrontend: <strong>Navbar & Session</strong></span>
+          <span class="mf-tag mf-remote">Cloud Staging (Remoto)</span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted);">
+          Este microfrontend roda direto da nuvem corporativa e obtém o usuário autenticado na nuvem (Porta 9001).
+        </p>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn" id="btn-fetch-session">
+            👤 Buscar Sessão (GET /session)
+          </button>
+          <button class="btn btn-amber" id="btn-fetch-catalog">
+            📦 Carregar Catálogo (GET /catalog)
+          </button>
+        </div>
+      </div>
+
+      <!-- MFE 2: Orders (The MFE being developed locally) -->
+      <div class="card">
+        <div class="card-title">
+          <span>Microfrontend: <strong>Checkout & Orders</strong></span>
+          <span class="mf-tag mf-local">Local Dev (localhost:8080)</span>
+        </div>
+        <p style="font-size: 13px; color: var(--text-muted);">
+          O frontend continua fazendo <code>fetch('http://localhost:9001/bff/core/v1/orders')</code> (a URL da nuvem).
+          Com o BackOverrides ativado, ele desvia em tempo real para o seu BFF local (Porta 8080)!
+        </p>
+
+        <div class="architecture-box">
+          <strong>Configuração Ativa:</strong><br>
+          • <code>GET /bff/core/v1/session</code> ➔ Mantido na Nuvem (Porta 9001)<br>
+          • <code>GET /bff/core/v1/catalog</code> ➔ Mantido na Nuvem (Porta 9001)<br>
+          • <code>POST /bff/core/v1/orders</code> ➔ <strong>Sobrescrito para Local (Porta 8080)</strong>
+        </div>
+
+        <button class="btn btn-emerald" id="btn-create-order" style="padding: 14px;">
+          🚀 Finalizar Pedido com Regra Local (POST /orders)
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Live Request Inspector -->
+    <div>
+      <div class="inspector">
+        <div class="inspector-header">
+          <span>⚡ Inspetor de Rede em Tempo Real</span>
+          <button id="btn-clear-logs" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 11px;">Limpar Logs</button>
+        </div>
+        <div class="log-stream" id="log-stream">
+          <div style="color: var(--text-muted); text-align: center; margin-top: 40px;">
+            Clique nos botões à esquerda para disparar requisições e observar o roteamento seletivo.
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const REMOTE_API = 'http://localhost:9001';
+    const PROXY_CLI = 'http://localhost:8889';
+    const LOCAL_BFF = 'http://localhost:8080';
+
+    const toggle = document.getElementById('toggle-backoverrides');
+    const statusLabel = document.getElementById('status-label');
+    const logStream = document.getElementById('log-stream');
+
+    toggle.addEventListener('change', () => {
+      if (toggle.checked) {
+        statusLabel.textContent = 'ATIVADO (localhost:8889)';
+        statusLabel.style.color = 'var(--accent-emerald)';
+      } else {
+        statusLabel.textContent = 'DESATIVADO (Direto na Nuvem)';
+        statusLabel.style.color = 'var(--text-muted)';
+      }
+    });
+
+    document.getElementById('btn-clear-logs').addEventListener('click', () => {
+      logStream.innerHTML = '';
+    });
+
+    // Custom fetch wrapper simulating BackOverrides In-Browser interception
+    async function executeApiCall(method, path, body = null) {
+      const isBackOverridesActive = toggle.checked;
+      const originalUrl = `${REMOTE_API}${path}`;
+
+      // In real app: BackOverrides inspects the URL.
+      // If POST /orders, it routes to local BFF (via proxy 8888 or direct)
+      const isOverrideRule = isBackOverridesActive && (path === '/bff/core/v1/orders' && method === 'POST');
+      
+      const targetUrl = isOverrideRule 
+        ? `${PROXY_CLI}${path}` 
+        : originalUrl;
+
+      const startTime = performance.now();
+
+      try {
+        const options = {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Portal-App': 'Single-SPA-Shell',
+          },
+        };
+        if (body) options.body = JSON.stringify(body);
+
+        const res = await fetch(targetUrl, options);
+        const duration = Math.round(performance.now() - startTime);
+        const data = await res.json();
+
+        renderLog({
+          method,
+          requestedUrl: originalUrl,
+          dispatchedUrl: targetUrl,
+          status: res.status,
+          duration,
+          isOverride: isOverrideRule,
+          data,
+        });
+      } catch (err) {
+        const duration = Math.round(performance.now() - startTime);
+        renderLog({
+          method,
+          requestedUrl: originalUrl,
+          dispatchedUrl: targetUrl,
+          status: 502,
+          duration,
+          isOverride: isOverrideRule,
+          error: err.message,
+          hint: 'Certifique-se de que os servidores da demo estão rodando: execute ./run-single-spa-demo.sh',
+        });
+      }
+    }
+
+    function renderLog(entry) {
+      const el = document.createElement('div');
+      el.className = `log-entry ${entry.isOverride ? 'override' : 'remote'}`;
+
+      const badgeHtml = entry.isOverride
+        ? `<span class="badge badge-override">OVERRIDE -> LOCAL BFF (8080)</span>`
+        : `<span class="badge badge-remote">REMOTE PASSTHROUGH (9001)</span>`;
+
+      el.innerHTML = `
+        <div class="log-meta">
+          <span>${new Date().toLocaleTimeString()} • ${entry.duration}ms</span>
+          ${badgeHtml}
+        </div>
+        <div class="log-title">
+          <strong>${entry.method}</strong> ${entry.requestedUrl}
+        </div>
+        <div style="font-size: 11px; color: var(--text-muted);">
+          Destino Físico: <code>${entry.dispatchedUrl}</code> [HTTP ${entry.status}]
+        </div>
+        <div class="log-json">${JSON.stringify(entry.data || { error: entry.error, hint: entry.hint }, null, 2)}</div>
+      `;
+
+      if (logStream.children.length === 1 && logStream.children[0].tagName !== 'DIV') {
+        logStream.innerHTML = '';
+      }
+      logStream.prepend(el);
+    }
+
+    // Button event listeners
+    document.getElementById('btn-fetch-session').addEventListener('click', () => {
+      executeApiCall('GET', '/bff/core/v1/session');
+    });
+
+    document.getElementById('btn-fetch-catalog').addEventListener('click', () => {
+      executeApiCall('GET', '/bff/core/v1/catalog');
+    });
+
+    document.getElementById('btn-create-order').addEventListener('click', () => {
+      executeApiCall('POST', '/bff/core/v1/orders', {
+        cartId: 'cart_9921',
+        coupon: 'DISCOUNT_V2',
+        customer: 'Jane Doe',
+      });
+    });
+  </script>
+</body>
+</html>

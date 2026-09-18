@@ -1,0 +1,23 @@
+{
+  "name": "@back-overrides/core",
+  "version": "0.1.0",
+  "description": "Environment-agnostic route matcher, rule engine, and CORS generator for BackOverrides",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "test": "node --test dist/**/*.test.js 2>/dev/null || node --test test/*.test.mjs"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

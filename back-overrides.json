@@ -1,0 +1,36 @@
+{
+  "port": 8888,
+  "remote": "https://api.corporate-cloud.io",
+  "local": "http://localhost:8080",
+  "cors": {
+    "enabled": true,
+    "credentials": true
+  },
+  "overrides": [
+    {
+      "methods": ["*"],
+      "path": "/bff/core/v1/oauth2/profile/*",
+      "description": "Redireciona profile para o BFF local"
+    },
+    {
+      "methods": ["*"],
+      "path": "/bff/core/v1/oauth2/loginUrl",
+      "description": "Redireciona loginUrl para o BFF local"
+    },
+    {
+      "methods": ["*"],
+      "path": "/bff/core/v1/oauth2/authorize",
+      "description": "Redireciona authorize para o BFF local"
+    },
+    {
+      "methods": ["*"],
+      "path": "/bff/core/v1/oauth2/tokenRequest",
+      "description": "Redireciona tokenRequest para o BFF local"
+    },
+    {
+      "methods": ["*"],
+      "path": "/bff/core/v1/oauth2/logout",
+      "description": "Redireciona logout para o BFF local"
+    }
+  ]
+}

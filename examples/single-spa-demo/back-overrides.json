@@ -1,0 +1,21 @@
+{
+  "port": 8889,
+  "remote": "http://localhost:9001",
+  "local": "http://localhost:8080",
+  "cors": {
+    "enabled": true,
+    "credentials": true
+  },
+  "overrides": [
+    {
+      "methods": ["POST"],
+      "path": "/bff/core/v1/orders",
+      "description": "Intercepts POST /bff/core/v1/orders to local BFF (v2 engine), while GET catalog & session stay on remote cloud"
+    },
+    {
+      "methods": ["GET"],
+      "path": "/bff/core/v1/oauth2/authorize",
+      "description": "Intercepts OAuth authorize to local BFF (testing new SSO IdP)"
+    }
+  ]
+}

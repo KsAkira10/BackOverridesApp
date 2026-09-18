@@ -1,0 +1,132 @@
+name: Release & Publish
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag para release manual (ex: v0.1.0)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Tests
+        run: npm test
+
+      - name: Build All Workspaces
+        run: npm run build
+
+      - name: Package Chrome/Edge Extension
+        run: |
+          mkdir -p dist-assets
+          cd packages/extension
+          zip -r ../../dist-assets/back-overrides-chrome-extension.zip manifest.json background.js popup.html popup.js README.md
+          cd ../..
+          echo "Extension packaged successfully:"
+          ls -lh dist-assets/
+
+      - name: Upload Extension Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-zip
+          path: dist-assets/back-overrides-chrome-extension.zip
+
+  github-release:
+    name: Create GitHub Release
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download Extension Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-zip
+          path: dist-assets
+
+      - name: Determine Tag Name
+        id: tag
+        run: |
+          if [ -n "${{ github.event.inputs.tag_name }}" ]; then
+            echo "name=${{ github.event.inputs.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "name=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.name }}
+          name: BackOverrides ${{ steps.tag.outputs.name }}
+          files: dist-assets/back-overrides-chrome-extension.zip
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-npm:
+    name: Publish to NPM
+    needs: [build-and-test, github-release]
+    runs-on: ubuntu-latest
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js with NPM Registry
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Dependencies & Build
+        run: |
+          npm install
+          npm run build
+
+      - name: Publish Packages to NPM
+        if: ${{ env.NPM_TOKEN != '' }}
+        run: |
+          echo "Publishing @back-overrides/core..."
+          npm publish --workspace=@back-overrides/core --access public
+
+          echo "Publishing @back-overrides/client..."
+          npm publish --workspace=@back-overrides/client --access public
+
+          echo "Publishing @back-overrides/cli..."
+          npm publish --workspace=@back-overrides/cli --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Notice if NPM_TOKEN is missing
+        if: ${{ env.NPM_TOKEN == '' }}
+        run: |
+          echo "::notice title=NPM Publish Ignored::O segredo NPM_TOKEN não foi configurado nos Secrets do repositório. Para publicar no registro público npm, adicione o secret NPM_TOKEN em Settings -> Secrets and variables -> Actions."
