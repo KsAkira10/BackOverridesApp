@@ -130,9 +130,19 @@ Before submitting your PR, verify the 4 fundamental guardrails locally:
 
 1. Open your PR targeting the `main` branch.
 2. The [.github/PULL_REQUEST_TEMPLATE.md](file:///Users/akira/Developer/akira/antigravity/BackOverridesApp/.github/PULL_REQUEST_TEMPLATE.md) template will load automatically.
-3. Complete the interactive checklist (change type, tests, sanitization).
-4. GitHub Actions CI will validate your commit messages and run tests across Node.js 18, 20, and 22.
-5. If your branch is `feat/*` or `fix/*`, a **Release Candidate (`-rc.N`)** will be published automatically for preview testing!
+3. Describe what was done, attach **visual evidence (terminal output prints, Network tab screenshots, or recordings)**, and specify reproduction steps under "How to Test".
+4. Complete the interactive checklist (change type, tests, sanitization).
+5. GitHub Actions CI will validate your commit messages and run tests across Node.js 18, 20, and 22.
+6. If your branch is `feat/*` or `fix/*`, a **Release Candidate (`-rc.N`)** will be published automatically for preview testing!
+
+---
+
+## 🐛 Reporting Bugs & Vulnerabilities via Issues
+
+When discovering unexpected behavior or a security issue, open an Issue using our dedicated templates:
+- **[🐛 Bug Report](file:///Users/akira/Developer/akira/antigravity/BackOverridesApp/.github/ISSUE_TEMPLATE/bug_report.md):** Provide maintainers with the exact step-by-step reproduction flow, DevTools Network/Console screenshots, and execution logs.
+- **[🔒 Security Vulnerability](file:///Users/akira/Developer/akira/antigravity/BackOverridesApp/.github/ISSUE_TEMPLATE/security_vulnerability.md):** Describe estimated severity, affected component, Proof of Concept (PoC) flow, and suggested remediation.
+- **[💡 Feature Request](file:///Users/akira/Developer/akira/antigravity/BackOverridesApp/.github/ISSUE_TEMPLATE/feature_request.md):** Share the motivation for the feature, configuration syntax examples, and conceptual mockups/screenshots.
 
 ---
 

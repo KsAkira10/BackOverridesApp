@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Documentação Oficial & Simulador Live
+    url: https://ksakira10.github.io/BackOverridesApp/
+    about: Consulte guias de início rápido, arquitetura e teste o simulador de rotas ao vivo.
+  - name: 🤝 Guia de Contribuição (InnerSource & Outsource)
+    url: https://github.com/KsAkira10/BackOverridesApp/blob/main/CONTRIBUTING.md
+    about: Veja como configurar o ambiente local, padrões de commit e checklist de guardrails.

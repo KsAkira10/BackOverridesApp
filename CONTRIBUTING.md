@@ -130,9 +130,19 @@ Antes de abrir seu PR, valide localmente os 4 guardrails fundamentais:
 
 1. Abra o PR apontando para a branch `main`.
 2. O template [.github/PULL_REQUEST_TEMPLATE.md](file:///Users/akira/Developer/akira/antigravity/BackOverridesApp/.github/PULL_REQUEST_TEMPLATE.md) será carregado automaticamente.
-3. Preencha todos os campos do checklist (tipo de mudança, testes, sanitização).
-4. A pipeline do GitHub Actions validará seus commits e executará os testes em Node.js 18, 20 e 22.
-5. Caso sua branch seja `feat/*` ou `fix/*`, um **Release Candidate (`-rc.N`)** será publicado automaticamente para validação prévia!
+3. Preencha a descrição do que foi feito, anexe **evidências visuais (prints do terminal, aba Network ou gravações)** e preencha os passos de "Como Testar".
+4. Preencha o checklist de guardrails (tipo de mudança, testes, sanitização).
+5. A pipeline do GitHub Actions validará seus commits e executará os testes em Node.js 18, 20 e 22.
+6. Caso sua branch seja `feat/*` ou `fix/*`, um **Release Candidate (`-rc.N`)** será publicado automaticamente para validação prévia!
+
+---
+
+## 🐛 Relatando Bugs ou Vulnerabilidades via Issues
+
+Ao encontrar um comportamento inesperado ou brecha de segurança, abra uma Issue utilizando nossos templates dedicados:
+- **[🐛 Relato de Bug](file:///Users/akira/Developer/akira/antigravity/BackOverridesApp/.github/ISSUE_TEMPLATE/bug_report.md):** Oriente os mantenedores com o fluxo exato passo a passo para reproduzir o problema, prints da aba Network/Console e logs de execução.
+- **[🔒 Relato de Vulnerabilidade](file:///Users/akira/Developer/akira/antigravity/BackOverridesApp/.github/ISSUE_TEMPLATE/security_vulnerability.md):** Descreva a severidade estimada, componente afetado, fluxo de exploração (PoC) e sugestão de mitigação.
+- **[💡 Sugestão de Funcionalidade](file:///Users/akira/Developer/akira/antigravity/BackOverridesApp/.github/ISSUE_TEMPLATE/feature_request.md):** Apresente a motivação da feature, exemplos de configuração e mockups/prints conceituais.
 
 ---
 
