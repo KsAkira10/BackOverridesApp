@@ -2,6 +2,13 @@
 
 > 🌐 **Language / Idioma:** [🇧🇷 Português](./README.md) | [🇺🇸 English](./README.en.md)
 
+[![Latest Release](https://img.shields.io/github/v/release/KsAkira10/BackOverridesApp?include_prereleases=false&label=release&color=10b981&logo=github)](https://github.com/KsAkira10/BackOverridesApp/releases/latest)
+[![Release Candidate](https://img.shields.io/github/v/release/KsAkira10/BackOverridesApp?include_prereleases=true&label=rc&color=f59e0b&logo=github)](https://github.com/KsAkira10/BackOverridesApp/releases)
+[![Extension Manifest](https://img.shields.io/badge/extension-Manifest%20V3-a855f7?logo=googlechrome&logoColor=white)](https://github.com/KsAkira10/BackOverridesApp/releases/latest)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-38bdf8?style=flat&logo=githubpages&logoColor=white)](https://ksakira10.github.io/BackOverridesApp/#extension)
+
+> 📖 **Full Documentation:** [https://ksakira10.github.io/BackOverridesApp/#extension](https://ksakira10.github.io/BackOverridesApp/#extension)
+
 This extension intercepts network traffic directly at the browser network layer (using `chrome.declarativeNetRequest`), providing:
 - **Redirection of asynchronous endpoints (`fetch` / `XMLHttpRequest`)** without changing API URLs in frontend code.
 - **Redirection of full-page top-level navigations (`main_frame`)**, such as OAuth login flows (`window.location.href = .../authorize`), routing the browser transparently to your local BFF.
