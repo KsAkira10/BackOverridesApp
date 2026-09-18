@@ -2,6 +2,8 @@
 
 > Interceptador seletivo de endpoints de APIs remotas e redirecionador para `localhost` com resolução automática e transparente de CORS e Private Network Access (PNA) para validação de comportamento integrado.
 
+> 🌐 **Language / Idioma:** [🇧🇷 Português](./README.md) | [🇺🇸 English](./README.en.md)
+
 ---
 
 ## 💡 Sobre o Projeto

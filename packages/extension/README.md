@@ -1,5 +1,7 @@
 # BackOverrides Chrome Extension (Manifest V3)
 
+> 🌐 **Language / Idioma:** [🇧🇷 Português](./README.md) | [🇺🇸 English](./README.en.md)
+
 Esta extensão intercepta requisições de rede diretamente na camada de rede do navegador (via `chrome.declarativeNetRequest`), permitindo:
 - **Redirecionamento de endpoints assíncronos (`fetch` / `XMLHttpRequest`)** sem trocar URLs no frontend.
 - **Redirecionamento de navegações de tela cheia (`main_frame`)**, como o fluxo de login OAuth (`window.location.href = .../authorize`), enviando o navegador para o seu BFF local de forma transparente.

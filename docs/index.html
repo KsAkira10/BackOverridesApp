@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BackOverrides — Interceptador Seletivo de Endpoints com Resolução de CORS</title>
-  <meta name="description" content="Redirecione endpoints específicos de APIs remotas para o localhost sem alterar código no frontend, com resolução automática de CORS e suporte a Single-SPA e OAuth.">
+  <title id="page-title">BackOverrides — Interceptador Seletivo de Endpoints com Resolução de CORS</title>
+  <meta name="description" id="meta-desc" content="Redirecione endpoints específicos de APIs remotas para o localhost sem alterar código no frontend, com resolução automática de CORS e suporte a Single-SPA e OAuth.">
   <meta name="keywords" content="BackOverrides, reverse proxy, cors, single-spa, microfrontends, bff, local development, chrome extension, declarativeNetRequest">
   <meta name="author" content="BackOverrides Team">
 
@@ -23,11 +23,35 @@
     </a>
 
     <div class="nav-links">
-      <a href="#quickstart" class="nav-link">Início Rápido</a>
-      <a href="#modes" class="nav-link">3 Modos</a>
-      <a href="#examples" class="nav-link">Exemplos Reais</a>
-      <a href="#playground" class="nav-link">Simulador Live</a>
-      <a href="#extension" class="nav-link">Extensão Chrome</a>
+      <a href="#quickstart" class="nav-link" data-i18n="nav_quickstart">Início Rápido</a>
+      <a href="#modes" class="nav-link" data-i18n="nav_modes">3 Modos</a>
+      <a href="#examples" class="nav-link" data-i18n="nav_examples">Exemplos Reais</a>
+      <a href="#playground" class="nav-link" data-i18n="nav_playground">Simulador Live</a>
+      <a href="#extension" class="nav-link" data-i18n="nav_extension">Extensão Chrome</a>
+
+      <!-- Language Switcher Dropdown -->
+      <div class="lang-switcher" id="lang-switcher">
+        <button class="lang-btn" id="lang-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Mudar idioma / Change language">
+          <span class="lang-flag" id="current-lang-flag">🇧🇷</span>
+          <span class="lang-code" id="current-lang-code">PT</span>
+          <svg class="lang-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <div class="lang-dropdown" id="lang-dropdown" role="menu">
+          <button class="lang-option active" data-lang="pt-BR" role="menuitem">
+            <span class="flag">🇧🇷</span>
+            <span class="label">Português (BR)</span>
+            <span class="check">✓</span>
+          </button>
+          <button class="lang-option" data-lang="en" role="menuitem">
+            <span class="flag">🇺🇸</span>
+            <span class="label">English</span>
+            <span class="check">✓</span>
+          </button>
+        </div>
+      </div>
+
       <a href="https://github.com/akira/BackOverridesApp" target="_blank" rel="noopener" class="nav-btn">
         <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
           <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
@@ -40,32 +64,32 @@
   <div class="layout">
     <!-- Sidebar Navigation -->
     <aside class="sidebar" id="sidebar">
-      <div class="sidebar-title">Começando</div>
+      <div class="sidebar-title" data-i18n="sidebar_getting_started">Começando</div>
       <ul class="sidebar-menu">
-        <li class="sidebar-item"><a href="#intro" class="active">Visão Geral</a></li>
-        <li class="sidebar-item"><a href="#problem">O Desafio de Rede</a></li>
-        <li class="sidebar-item"><a href="#quickstart">Início Rápido (30s)</a></li>
+        <li class="sidebar-item"><a href="#intro" class="active" data-i18n="sidebar_overview">Visão Geral</a></li>
+        <li class="sidebar-item"><a href="#problem" data-i18n="sidebar_problem">O Desafio de Rede</a></li>
+        <li class="sidebar-item"><a href="#quickstart" data-i18n="sidebar_quickstart">Início Rápido (30s)</a></li>
       </ul>
 
-      <div class="sidebar-title">Arquitetura</div>
+      <div class="sidebar-title" data-i18n="sidebar_architecture">Arquitetura</div>
       <ul class="sidebar-menu">
-        <li class="sidebar-item"><a href="#modes">Os 3 Modos de Operação</a></li>
-        <li class="sidebar-item"><a href="#cors-pna">Resolução de CORS & PNA</a></li>
+        <li class="sidebar-item"><a href="#modes" data-i18n="sidebar_modes">Os 3 Modos de Operação</a></li>
+        <li class="sidebar-item"><a href="#cors-pna" data-i18n="sidebar_cors_pna">Resolução de CORS & PNA</a></li>
       </ul>
 
-      <div class="sidebar-title">Exemplos Práticos</div>
+      <div class="sidebar-title" data-i18n="sidebar_examples">Exemplos Práticos</div>
       <ul class="sidebar-menu">
-        <li class="sidebar-item"><a href="#ex-basic">1. REST Simples</a></li>
-        <li class="sidebar-item"><a href="#ex-dynamic">2. Rotas Dinâmicas & Wildcard</a></li>
-        <li class="sidebar-item"><a href="#ex-single-spa">3. Single-SPA + Fake BFF</a></li>
-        <li class="sidebar-item"><a href="#ex-oauth">4. OAuth / SSO (main_frame)</a></li>
+        <li class="sidebar-item"><a href="#ex-basic" data-i18n="sidebar_ex_basic">1. REST Simples</a></li>
+        <li class="sidebar-item"><a href="#ex-dynamic" data-i18n="sidebar_ex_dynamic">2. Rotas Dinâmicas & Wildcard</a></li>
+        <li class="sidebar-item"><a href="#ex-single-spa" data-i18n="sidebar_ex_single_spa">3. Single-SPA + Fake BFF</a></li>
+        <li class="sidebar-item"><a href="#ex-oauth" data-i18n="sidebar_ex_oauth">4. OAuth / SSO (main_frame)</a></li>
       </ul>
 
-      <div class="sidebar-title">Ferramentas & Docs</div>
+      <div class="sidebar-title" data-i18n="sidebar_tools_docs">Ferramentas & Docs</div>
       <ul class="sidebar-menu">
-        <li class="sidebar-item"><a href="#playground">Simulador Interativo Live</a></li>
-        <li class="sidebar-item"><a href="#config-reference">Configuração JSON</a></li>
-        <li class="sidebar-item"><a href="#extension">Extensão do Chrome</a></li>
+        <li class="sidebar-item"><a href="#playground" data-i18n="sidebar_playground">Simulador Interativo Live</a></li>
+        <li class="sidebar-item"><a href="#config-reference" data-i18n="sidebar_config_ref">Configuração JSON</a></li>
+        <li class="sidebar-item"><a href="#extension" data-i18n="sidebar_extension">Extensão do Chrome</a></li>
       </ul>
     </aside>
 
@@ -76,20 +100,20 @@
       <section class="hero" id="intro">
         <div class="hero-badge">
           <span class="pulse-dot"></span>
-          Versão 0.1.0 • Produzido para Microfrontends & BFFs
+          <span data-i18n="hero_badge">Versão 0.1.0 • Produzido para Microfrontends & BFFs</span>
         </div>
 
-        <h1>Teste APIs locais mantendo seu frontend 100% apontado para a nuvem.</h1>
+        <h1 data-i18n="hero_title">Teste APIs locais mantendo seu frontend 100% apontado para a nuvem.</h1>
 
-        <p>
+        <p data-i18n-html="hero_desc">
           O <strong>BackOverrides</strong> intercepta seletivamente endpoints específicos de APIs remotas e os desvia para o seu <code>localhost</code>, resolvendo automaticamente barreiras de <strong>CORS</strong>, <strong>Private Network Access (PNA)</strong> e redirecionamentos de página <strong>OAuth</strong> sem alterar nenhuma linha de código no frontend.
         </p>
 
         <div class="hero-actions">
-          <a href="#quickstart" class="btn-primary">
+          <a href="#quickstart" class="btn-primary" data-i18n="hero_cta_start">
             🚀 Início Rápido
           </a>
-          <a href="#playground" class="btn-secondary">
+          <a href="#playground" class="btn-secondary" data-i18n="hero_cta_playground">
             ⚡ Testar Simulador Live
           </a>
         </div>
@@ -98,32 +122,32 @@
       <!-- Problem vs Solution -->
       <section class="section" id="problem">
         <div class="section-header">
-          <span class="section-tag">Cenário Corporativo</span>
-          <h2 class="section-title">O Problema de Testar Local com Nuvem</h2>
-          <p class="section-desc">Por que alterar URLs base no frontend quebra seu fluxo de desenvolvimento.</p>
+          <span class="section-tag" data-i18n="problem_tag">Cenário Corporativo</span>
+          <h2 class="section-title" data-i18n="problem_title">O Problema de Testar Local com Nuvem</h2>
+          <p class="section-desc" data-i18n="problem_desc">Por que alterar URLs base no frontend quebra seu fluxo de desenvolvimento.</p>
         </div>
 
         <div class="cards-grid">
           <div class="feature-card">
             <div class="card-icon icon-amber">🚫</div>
-            <h3>Bloqueios de CORS e PNA</h3>
-            <p>
+            <h3 data-i18n="problem_c1_title">Bloqueios de CORS e PNA</h3>
+            <p data-i18n-html="problem_c1_desc">
               Quando seu portal roda em HTTPS público (ex.: <code>https://portal.corporate-cloud.io</code>), navegadores modernos bloqueiam chamadas diretas para <code>http://localhost</code> por segurança de Private Network Access.
             </p>
           </div>
 
           <div class="feature-card">
             <div class="card-icon icon-purple">🔄</div>
-            <h3>Acoplamento de Código</h3>
-            <p>
+            <h3 data-i18n="problem_c2_title">Acoplamento de Código</h3>
+            <p data-i18n-html="problem_c2_desc">
               Alterar a URL base de <code>https://api.corporate-cloud.io</code> para <code>http://localhost:8080</code> exige editar <code>.env</code>, recompilar o frontend e corre o risco de subir URLs locais para produção por engano.
             </p>
           </div>
 
           <div class="feature-card">
             <div class="card-icon icon-emerald">⚡</div>
-            <h3>A Solução BackOverrides</h3>
-            <p>
+            <h3 data-i18n="problem_c3_title">A Solução BackOverrides</h3>
+            <p data-i18n-html="problem_c3_desc">
               Suas URLs permanecem <strong>100% idênticas às de produção</strong>. O BackOverrides intercepta em tempo de execução apenas as rotas declaradas e injeta cabeçalhos CORS permissivos transparentemente.
             </p>
           </div>
@@ -133,26 +157,26 @@
       <!-- Quickstart -->
       <section class="section" id="quickstart">
         <div class="section-header">
-          <span class="section-tag">Instalação</span>
-          <h2 class="section-title">Início Rápido em 30 Segundos</h2>
-          <p class="section-desc">Escolha usar via CLI ou diretamente como biblioteca no seu projeto.</p>
+          <span class="section-tag" data-i18n="qs_tag">Instalação</span>
+          <h2 class="section-title" data-i18n="qs_title">Início Rápido em 30 Segundos</h2>
+          <p class="section-desc" data-i18n="qs_desc">Escolha usar via CLI ou diretamente como biblioteca no seu projeto.</p>
         </div>
 
         <div class="tabs-container">
           <div class="tabs-nav">
-            <button class="tab-btn active" data-tab="tab-cli-quick">1. Usando a CLI (Zero Instalação)</button>
-            <button class="tab-btn" data-tab="tab-sdk-quick">2. Usando no Código (@back-overrides/client)</button>
-            <button class="tab-btn" data-tab="tab-ext-quick">3. Extensão Chrome (Zero Código)</button>
+            <button class="tab-btn active" data-tab="tab-cli-quick" data-i18n="qs_tab1_btn">1. Usando a CLI (Zero Instalação)</button>
+            <button class="tab-btn" data-tab="tab-sdk-quick" data-i18n="qs_tab2_btn">2. Usando no Código (@back-overrides/client)</button>
+            <button class="tab-btn" data-tab="tab-ext-quick" data-i18n="qs_tab3_btn">3. Extensão Chrome (Zero Código)</button>
           </div>
 
           <div class="tab-content active" id="tab-cli-quick">
-            <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 14px;">
+            <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 14px;" data-i18n="qs_tab1_p">
               Inicie o proxy reverso apontando para sua API remota e seu backend local:
             </p>
             <div class="code-box">
               <div class="code-header">
                 <span>terminal — bash</span>
-                <button class="code-copy-btn">Copiar</button>
+                <button class="code-copy-btn" data-i18n="copy_text">Copiar</button>
               </div>
               <pre><code># Executa o proxy sem instalar nada via npx
 npx back-overrides \
@@ -164,13 +188,13 @@ npx back-overrides \
           </div>
 
           <div class="tab-content" id="tab-sdk-quick">
-            <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 14px;">
+            <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 14px;" data-i18n="qs_tab2_p">
               Importe o interceptor no ponto de entrada do seu microfrontend ou Single-SPA app:
             </p>
             <div class="code-box">
               <div class="code-header">
                 <span>src/main.ts</span>
-                <button class="code-copy-btn">Copiar</button>
+                <button class="code-copy-btn" data-i18n="copy_text">Copiar</button>
               </div>
               <pre><code>import { setupBackOverrides } from '@back-overrides/client';
 
@@ -182,15 +206,15 @@ setupBackOverrides({
           </div>
 
           <div class="tab-content" id="tab-ext-quick">
-            <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 14px;">
+            <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 14px;" data-i18n-html="qs_tab3_p">
               Carregue a extensão no Chrome para interceptar chamadas <code>fetch</code> e navegações <code>main_frame</code> sem alterar nenhuma linha do projeto:
             </p>
             <div class="code-box">
               <div class="code-header">
-                <span>Passo a Passo</span>
-                <button class="code-copy-btn">Copiar</button>
+                <span data-i18n="qs_tab3_step_title">Passo a Passo</span>
+                <button class="code-copy-btn" data-i18n="copy_text">Copiar</button>
               </div>
-              <pre><code>1. Acesse chrome://extensions/ no Google Chrome ou Edge
+              <pre><code id="ext-instructions-code" data-i18n="qs_tab3_steps">1. Acesse chrome://extensions/ no Google Chrome ou Edge
 2. Ative a opção "Modo do desenvolvedor" no canto superior direito
 3. Clique em "Carregar sem compactação" (Load unpacked)
 4. Selecione a pasta: packages/extension</code></pre>
@@ -202,32 +226,32 @@ setupBackOverrides({
       <!-- 3 Operating Modes -->
       <section class="section" id="modes">
         <div class="section-header">
-          <span class="section-tag">Arquitetura Flexível</span>
-          <h2 class="section-title">Os 3 Modos de Operação</h2>
-          <p class="section-desc">O BackOverrides se adapta ao seu ambiente de desenvolvimento.</p>
+          <span class="section-tag" data-i18n="modes_tag">Arquitetura Flexível</span>
+          <h2 class="section-title" data-i18n="modes_title">Os 3 Modos de Operação</h2>
+          <p class="section-desc" data-i18n="modes_desc">O BackOverrides se adapta ao seu ambiente de desenvolvimento.</p>
         </div>
 
         <div class="cards-grid">
           <div class="feature-card">
             <div class="card-icon icon-blue">💻</div>
-            <h3>1. Proxy CLI Inteligente</h3>
-            <p>
+            <h3 data-i18n="modes_m1_title">1. Proxy CLI Inteligente</h3>
+            <p data-i18n="modes_m1_desc">
               Proxy reverso Node.js com logs detalhados de requisições, tempo de resposta, headers injetados e tratamento de erros 502 com dicas de diagnóstico.
             </p>
           </div>
 
           <div class="feature-card">
             <div class="card-icon icon-emerald">🌐</div>
-            <h3>2. Interceptor In-Browser</h3>
-            <p>
+            <h3 data-i18n="modes_m2_title">2. Interceptor In-Browser</h3>
+            <p data-i18n-html="modes_m2_desc">
               Patch transparente em <code>window.fetch</code> e <code>XMLHttpRequest</code> ou Service Worker. Ideal para Single-SPA e microfrontends carregados via Import Map.
             </p>
           </div>
 
           <div class="feature-card">
             <div class="card-icon icon-purple">🧩</div>
-            <h3>3. Extensão Chrome (Manifest V3)</h3>
-            <p>
+            <h3 data-i18n="modes_m3_title">3. Extensão Chrome (Manifest V3)</h3>
+            <p data-i18n-html="modes_m3_desc">
               Interceptação na camada de rede com <code>chrome.declarativeNetRequest</code>. Suporta requisições assíncronas e redirecionamentos de tela cheia (<code>main_frame</code>) para fluxos de autenticação.
             </p>
           </div>
@@ -237,24 +261,24 @@ setupBackOverrides({
       <!-- Practical Examples Section -->
       <section class="section" id="examples">
         <div class="section-header">
-          <span class="section-tag">Guias Práticos</span>
-          <h2 class="section-title">Exemplos Reais: Do Básico ao Avançado</h2>
-          <p class="section-desc">Aprenda a aplicar o BackOverrides em diferentes níveis de complexidade.</p>
+          <span class="section-tag" data-i18n="ex_tag">Guias Práticos</span>
+          <h2 class="section-title" data-i18n="ex_title">Exemplos Reais: Do Básico ao Avançado</h2>
+          <p class="section-desc" data-i18n="ex_desc">Aprenda a aplicar o BackOverrides em diferentes níveis de complexidade.</p>
         </div>
 
         <!-- Example 1: Basic REST -->
         <div id="ex-basic" style="margin-bottom: 40px;">
           <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 10px;">
-            <span class="badge-tag tag-remote">Nível 1</span> Sobrescrita de Endpoint REST Simples
+            <span class="badge-tag tag-remote" data-i18n="ex1_level">Nível 1</span> <span data-i18n="ex1_title">Sobrescrita de Endpoint REST Simples</span>
           </h3>
-          <p style="color: var(--text-secondary); margin-bottom: 14px; font-size: 14px;">
+          <p style="color: var(--text-secondary); margin-bottom: 14px; font-size: 14px;" data-i18n-html="ex1_desc">
             Você está criando a rota de criação de usuários localmente (<code>POST /v1/users</code> na porta <code>3000</code>), mas quer que a listagem (<code>GET /v1/users</code>) continue vindo da API de homologação/nuvem.
           </p>
 
           <div class="code-box">
             <div class="code-header">
               <span>back-overrides.json</span>
-              <button class="code-copy-btn">Copiar</button>
+              <button class="code-copy-btn" data-i18n="copy_text">Copiar</button>
             </div>
             <pre><code>{
   "port": 8080,
@@ -275,16 +299,16 @@ setupBackOverrides({
         <!-- Example 2: Dynamic Parameters & Wildcards -->
         <div id="ex-dynamic" style="margin-bottom: 40px;">
           <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 10px;">
-            <span class="badge-tag tag-override">Nível 2</span> Parâmetros Dinâmicos e Preservação de Query Strings
+            <span class="badge-tag tag-override" data-i18n="ex2_level">Nível 2</span> <span data-i18n="ex2_title">Parâmetros Dinâmicos e Preservação de Query Strings</span>
           </h3>
-          <p style="color: var(--text-secondary); margin-bottom: 14px; font-size: 14px;">
+          <p style="color: var(--text-secondary); margin-bottom: 14px; font-size: 14px;" data-i18n-html="ex2_desc">
             Suporte nativo a parâmetros no formato <code>:id</code> ou <code>{id}</code>, além de wildcards (<code>*</code>) preservando perfeitamente query strings (ex.: <code>?filter=active&sort=desc</code>).
           </p>
 
           <div class="code-box">
             <div class="code-header">
               <span>back-overrides.json</span>
-              <button class="code-copy-btn">Copiar</button>
+              <button class="code-copy-btn" data-i18n="copy_text">Copiar</button>
             </div>
             <pre><code>{
   "port": 8080,
@@ -309,9 +333,9 @@ setupBackOverrides({
         <!-- Example 3: Single-SPA + Fake BFF -->
         <div id="ex-single-spa" style="margin-bottom: 40px;">
           <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 10px;">
-            <span class="badge-tag tag-override">Nível 3</span> Single-SPA Microfrontends com BFF Simulado
+            <span class="badge-tag tag-override" data-i18n="ex3_level">Nível 3</span> <span data-i18n="ex3_title">Single-SPA Microfrontends com BFF Simulado</span>
           </h3>
-          <p style="color: var(--text-secondary); margin-bottom: 14px; font-size: 14px;">
+          <p style="color: var(--text-secondary); margin-bottom: 14px; font-size: 14px;" data-i18n-html="ex3_desc">
             No cenário corporativo mais comum, o portal central roda Single-SPA com múltiplos microfrontends. O desenvolvedor edita apenas um MFE apontado via <code>import-map-overrides</code> e quer validar novas rotas de um BFF local:
           </p>
 
@@ -324,7 +348,7 @@ setupBackOverrides({
 
             <div class="tab-content active" id="tab-sspa-config">
               <div class="code-box">
-                <div class="code-header"><span>examples/single-spa-demo/back-overrides.json</span><button class="code-copy-btn">Copiar</button></div>
+                <div class="code-header"><span>examples/single-spa-demo/back-overrides.json</span><button class="code-copy-btn" data-i18n="copy_text">Copiar</button></div>
                 <pre><code>{
   "port": 8889,
   "remote": "http://localhost:9001",
@@ -343,7 +367,7 @@ setupBackOverrides({
 
             <div class="tab-content" id="tab-sspa-mfe">
               <div class="code-box">
-                <div class="code-header"><span>src/orders-mfe.ts</span><button class="code-copy-btn">Copiar</button></div>
+                <div class="code-header"><span>src/orders-mfe.ts</span><button class="code-copy-btn" data-i18n="copy_text">Copiar</button></div>
                 <pre><code>// O código do microfrontend continua usando a URL corporativa normal:
 const res = await fetch('http://localhost:9001/bff/core/v1/orders', {
   method: 'POST',
@@ -358,11 +382,11 @@ console.log('Pedido processado com sucesso:', data.orderId);</code></pre>
             </div>
 
             <div class="tab-content" id="tab-sspa-run">
-              <p style="color: var(--text-secondary); margin-bottom: 8px; font-size: 13px;">
+              <p style="color: var(--text-secondary); margin-bottom: 8px; font-size: 13px;" data-i18n="ex3_tab_run_desc">
                 Clone o repositório e execute a demonstração do Single-SPA com um comando:
               </p>
               <div class="code-box">
-                <div class="code-header"><span>terminal — bash</span><button class="code-copy-btn">Copiar</button></div>
+                <div class="code-header"><span>terminal — bash</span><button class="code-copy-btn" data-i18n="copy_text">Copiar</button></div>
                 <pre><code>./examples/single-spa-demo/run-single-spa-demo.sh</code></pre>
               </div>
             </div>
@@ -372,19 +396,19 @@ console.log('Pedido processado com sucesso:', data.orderId);</code></pre>
         <!-- Example 4: OAuth / SSO with main_frame -->
         <div id="ex-oauth">
           <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 10px;">
-            <span class="badge-tag tag-main-frame">Nível 4</span> Fluxo OAuth 2.0 / SSO Completo com <code>main_frame</code>
+            <span class="badge-tag tag-main-frame" data-i18n="ex4_level">Nível 4</span> <span data-i18n-html="ex4_title">Fluxo OAuth 2.0 / SSO Completo com <code>main_frame</code></span>
           </h3>
-          <p style="color: var(--text-secondary); margin-bottom: 14px; font-size: 14px;">
+          <p style="color: var(--text-secondary); margin-bottom: 14px; font-size: 14px;" data-i18n-html="ex4_p1">
             Quando uma aplicação inicia o login, ela executa uma <strong>navegação de página inteira</strong> (<code>window.location.href = .../authorize</code>). Scripts comuns in-browser são bloqueados pelo navegador e não capturam essa mudança.
           </p>
-          <p style="color: var(--text-secondary); margin-bottom: 14px; font-size: 14px;">
+          <p style="color: var(--text-secondary); margin-bottom: 14px; font-size: 14px;" data-i18n-html="ex4_p2">
             A <strong>Extensão BackOverrides</strong> utiliza a API <code>chrome.declarativeNetRequest</code> com o tipo de recurso <code>main_frame</code> habilitado. Ela intercepta a navegação no nível do motor de rede do Chrome e desvia a aba para o seu BFF local, disparando o Identity Provider correto sem que você precise tocar em nenhuma linha do frontend.
           </p>
 
           <div class="code-box">
             <div class="code-header">
               <span>packages/extension/background.js — Snippet</span>
-              <button class="code-copy-btn">Copiar</button>
+              <button class="code-copy-btn" data-i18n="copy_text">Copiar</button>
             </div>
             <pre><code>condition: {
   regexFilter: rule.sourceRegex,
@@ -398,34 +422,34 @@ console.log('Pedido processado com sucesso:', data.orderId);</code></pre>
       <!-- Interactive Playground Section -->
       <section class="section" id="playground">
         <div class="section-header">
-          <span class="section-tag">Playground Interativo</span>
-          <h2 class="section-title">Simulador de Roteamento ao Vivo</h2>
-          <p class="section-desc">Teste como o BackOverrides se comporta em cada rota e modo de operação diretamente no seu navegador.</p>
+          <span class="section-tag" data-i18n="pg_tag">Playground Interativo</span>
+          <h2 class="section-title" data-i18n="pg_title">Simulador de Roteamento ao Vivo</h2>
+          <p class="section-desc" data-i18n="pg_desc">Teste como o BackOverrides se comporta em cada rota e modo de operação diretamente no seu navegador.</p>
         </div>
 
         <div class="playground-card">
           <div class="playground-controls">
             <div class="control-group">
-              <label for="playground-endpoint">Endpoint a Testar:</label>
+              <label for="playground-endpoint" data-i18n="pg_label_endpoint">Endpoint a Testar:</label>
               <select id="playground-endpoint" class="select-box">
-                <option value="/bff/core/v1/session">GET /bff/core/v1/session (Sessão Nuvem)</option>
-                <option value="/bff/core/v1/catalog">GET /bff/core/v1/catalog (Catálogo Nuvem)</option>
-                <option value="/bff/core/v1/orders">POST /bff/core/v1/orders (Pedido - Regra Local)</option>
-                <option value="/bff/core/v1/oauth2/authorize">GET /bff/core/v1/oauth2/authorize (Login SSO)</option>
+                <option value="/bff/core/v1/session" data-i18n="pg_opt_session">GET /bff/core/v1/session (Sessão Nuvem)</option>
+                <option value="/bff/core/v1/catalog" data-i18n="pg_opt_catalog">GET /bff/core/v1/catalog (Catálogo Nuvem)</option>
+                <option value="/bff/core/v1/orders" data-i18n="pg_opt_orders">POST /bff/core/v1/orders (Pedido - Regra Local)</option>
+                <option value="/bff/core/v1/oauth2/authorize" data-i18n="pg_opt_oauth">GET /bff/core/v1/oauth2/authorize (Login SSO)</option>
               </select>
             </div>
 
             <div class="control-group">
-              <label for="playground-mode">Modo do BackOverrides:</label>
+              <label for="playground-mode" data-i18n="pg_label_mode">Modo do BackOverrides:</label>
               <select id="playground-mode" class="select-box">
-                <option value="extension">Extensão Chrome (main_frame Ativo)</option>
-                <option value="in-browser">Script In-Browser (@back-overrides/client)</option>
-                <option value="disabled">Desativado (Tráfego Direto para Nuvem)</option>
+                <option value="extension" data-i18n="pg_mode_ext">Extensão Chrome (main_frame Ativo)</option>
+                <option value="in-browser" data-i18n="pg_mode_browser">Script In-Browser (@back-overrides/client)</option>
+                <option value="disabled" data-i18n="pg_mode_disabled">Desativado (Tráfego Direto para Nuvem)</option>
               </select>
             </div>
 
             <div class="control-group" style="justify-content: flex-end;">
-              <button id="btn-playground-run" class="playground-btn">
+              <button id="btn-playground-run" class="playground-btn" data-i18n="pg_btn_run">
                 ⚡ Disparar Requisição
               </button>
             </div>
@@ -434,28 +458,28 @@ console.log('Pedido processado com sucesso:', data.orderId);</code></pre>
           <!-- Flow Node Visualizer -->
           <div class="route-visualizer">
             <div class="flow-node" id="node-client">
-              <div class="node-title">Origem</div>
-              <div class="node-name">Single-SPA Portal</div>
+              <div class="node-title" data-i18n="pg_node_origin_title">Origem</div>
+              <div class="node-name" data-i18n="pg_node_origin_val">Single-SPA Portal</div>
             </div>
             <div class="flow-arrow">➔</div>
             <div class="flow-node" id="node-interceptor">
-              <div class="node-title">Interceptor</div>
-              <div class="node-name" style="color: var(--accent-cyan);">Extensão (main_frame)</div>
+              <div class="node-title" data-i18n="pg_node_interceptor_title">Interceptor</div>
+              <div class="node-name" id="node-interceptor-name" style="color: var(--accent-cyan);">Extensão (main_frame)</div>
             </div>
             <div class="flow-arrow">➔</div>
             <div class="flow-node" id="node-destination">
-              <div class="node-title">Destino Final</div>
-              <div class="node-name" style="color: var(--accent-emerald);">Aguardando teste...</div>
+              <div class="node-title" data-i18n="pg_node_dest_title">Destino Final</div>
+              <div class="node-name" id="node-destination-name" style="color: var(--accent-emerald);" data-i18n="pg_node_dest_waiting">Aguardando teste...</div>
             </div>
           </div>
 
           <!-- Console Inspector -->
           <div class="console-box">
             <div class="console-header">
-              <span>Inspetor de Resposta & Headers</span>
-              <span id="playground-meta">Pronto</span>
+              <span data-i18n="pg_console_header">Inspetor de Resposta & Headers</span>
+              <span id="playground-meta" data-i18n="pg_console_ready">Pronto</span>
             </div>
-            <div class="console-body" id="playground-output">Clique em "⚡ Disparar Requisição" acima para ver o diagnóstico em tempo real.</div>
+            <div class="console-body" id="playground-output" data-i18n="pg_console_initial">Clique em "⚡ Disparar Requisição" acima para ver o diagnóstico em tempo real.</div>
           </div>
         </div>
       </section>
@@ -463,63 +487,63 @@ console.log('Pedido processado com sucesso:', data.orderId);</code></pre>
       <!-- Configuration Reference -->
       <section class="section" id="config-reference">
         <div class="section-header">
-          <span class="section-tag">Referência da API</span>
-          <h2 class="section-title">Esquema do <code>back-overrides.json</code></h2>
-          <p class="section-desc">Todos os parâmetros disponíveis para customização do proxy e regras.</p>
+          <span class="section-tag" data-i18n="cfg_tag">Referência da API</span>
+          <h2 class="section-title" data-i18n-html="cfg_title">Esquema do <code>back-overrides.json</code></h2>
+          <p class="section-desc" data-i18n="cfg_desc">Todos os parâmetros disponíveis para customização do proxy e regras.</p>
         </div>
 
         <div class="table-container">
           <table class="spec-table">
             <thead>
               <tr>
-                <th>Propriedade</th>
-                <th>Tipo</th>
-                <th>Padrão</th>
-                <th>Descrição</th>
+                <th data-i18n="cfg_th_prop">Propriedade</th>
+                <th data-i18n="cfg_th_type">Tipo</th>
+                <th data-i18n="cfg_th_default">Padrão</th>
+                <th data-i18n="cfg_th_desc">Descrição</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td><code>remote</code></td>
                 <td>String</td>
-                <td><em>Obrigatório</em></td>
-                <td>URL base da API remota oficial (ex.: <code>https://api.corporate-cloud.io</code>).</td>
+                <td><em data-i18n="cfg_required">Obrigatório</em></td>
+                <td data-i18n-html="cfg_desc_remote">URL base da API remota oficial (ex.: <code>https://api.corporate-cloud.io</code>).</td>
               </tr>
               <tr>
                 <td><code>local</code></td>
                 <td>String</td>
                 <td><code>http://localhost:3000</code></td>
-                <td>URL base padrão para onde as rotas interceptadas serão encaminhadas.</td>
+                <td data-i18n="cfg_desc_local">URL base padrão para onde as rotas interceptadas serão encaminhadas.</td>
               </tr>
               <tr>
                 <td><code>port</code></td>
                 <td>Number</td>
                 <td><code>8080</code></td>
-                <td>Porta local em que o proxy reverso CLI escutará.</td>
+                <td data-i18n="cfg_desc_port">Porta local em que o proxy reverso CLI escutará.</td>
               </tr>
               <tr>
                 <td><code>cors.enabled</code></td>
                 <td>Boolean</td>
                 <td><code>true</code></td>
-                <td>Injeta cabeçalhos permissivos (<code>Access-Control-Allow-Origin</code>) refletindo a origem solicitante.</td>
+                <td data-i18n-html="cfg_desc_cors_enabled">Injeta cabeçalhos permissivos (<code>Access-Control-Allow-Origin</code>) refletindo a origem solicitante.</td>
               </tr>
               <tr>
                 <td><code>cors.credentials</code></td>
                 <td>Boolean</td>
                 <td><code>true</code></td>
-                <td>Permite envio de cookies de sessão corporativos (<code>Access-Control-Allow-Credentials: true</code>).</td>
+                <td data-i18n-html="cfg_desc_cors_credentials">Permite envio de cookies de sessão corporativos (<code>Access-Control-Allow-Credentials: true</code>).</td>
               </tr>
               <tr>
                 <td><code>secure</code></td>
                 <td>Boolean</td>
                 <td><code>false</code></td>
-                <td>Quando <code>false</code>, aceita certificados SSL autoassinados ou corporativos em redes privadas.</td>
+                <td data-i18n-html="cfg_desc_secure">Quando <code>false</code>, aceita certificados SSL autoassinados ou corporativos em redes privadas.</td>
               </tr>
               <tr>
                 <td><code>overrides</code></td>
                 <td>Array</td>
                 <td><code>[]</code></td>
-                <td>Lista de regras de roteamento (com <code>methods</code>, <code>path</code>, <code>target</code>, <code>passthrough</code>).</td>
+                <td data-i18n="cfg_desc_overrides">Lista de regras de roteamento (com <code>methods</code>, <code>path</code>, <code>target</code>, <code>passthrough</code>).</td>
               </tr>
             </tbody>
           </table>
@@ -529,32 +553,32 @@ console.log('Pedido processado com sucesso:', data.orderId);</code></pre>
       <!-- Extension Guide -->
       <section class="section" id="extension">
         <div class="section-header">
-          <span class="section-tag">Zero Código</span>
-          <h2 class="section-title">Extensão para Google Chrome & Edge</h2>
-          <p class="section-desc">Instale uma vez e intercepte endpoints corporativos sem modificar repositórios de código.</p>
+          <span class="section-tag" data-i18n="ext_tag">Zero Código</span>
+          <h2 class="section-title" data-i18n="ext_title">Extensão para Google Chrome & Edge</h2>
+          <p class="section-desc" data-i18n="ext_desc">Instale uma vez e intercepte endpoints corporativos sem modificar repositórios de código.</p>
         </div>
 
         <div class="cards-grid">
           <div class="feature-card">
             <div class="card-icon icon-emerald">1</div>
-            <h3>Carregar no Navegador</h3>
-            <p>
+            <h3 data-i18n="ext_c1_title">Carregar no Navegador</h3>
+            <p data-i18n-html="ext_c1_desc">
               Abra <code>chrome://extensions</code>, ative o <strong>Modo do Desenvolvedor</strong> e clique em <strong>Carregar sem compactação</strong> apontando para <code>packages/extension</code>.
             </p>
           </div>
 
           <div class="feature-card">
             <div class="card-icon icon-blue">2</div>
-            <h3>Sincronização com 1 Clique</h3>
-            <p>
+            <h3 data-i18n="ext_c2_title">Sincronização com 1 Clique</h3>
+            <p data-i18n-html="ext_c2_desc">
               A extensão se conecta automaticamente ao BackOverrides CLI (<code>http://localhost:8888</code>) e importa todas as regras do seu <code>back-overrides.json</code> dinamicamente.
             </p>
           </div>
 
           <div class="feature-card">
             <div class="card-icon icon-purple">3</div>
-            <h3>Suporte a main_frame</h3>
-            <p>
+            <h3 data-i18n="ext_c3_title">Suporte a main_frame</h3>
+            <p data-i18n-html="ext_c3_desc">
               Intercepta não apenas <code>fetch</code> e <code>XHR</code>, mas também navegações completas do navegador como o fluxo de login corporativo OAuth/SSO.
             </p>
           </div>
@@ -564,10 +588,10 @@ console.log('Pedido processado com sucesso:', data.orderId);</code></pre>
       <!-- Footer -->
       <footer class="footer">
         <div>
-          <strong>BackOverrides</strong> — MIT Licensed. Feito para desenvolvedores que valorizam agilidade.
+          <span data-i18n-html="footer_text"><strong>BackOverrides</strong> — MIT Licensed. Feito para desenvolvedores que valorizam agilidade.</span>
         </div>
         <div>
-          <a href="#top-nav">Voltar ao Topo ↑</a>
+          <a href="#top-nav" data-i18n="footer_back_to_top">Voltar ao Topo ↑</a>
         </div>
       </footer>
 
