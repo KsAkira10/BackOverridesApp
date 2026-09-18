@@ -2,6 +2,13 @@
 
 > 🌐 **Language / Idioma:** [🇧🇷 Português](./README.md) | [🇺🇸 English](./README.en.md)
 
+[![Latest Release](https://img.shields.io/github/v/release/KsAkira10/BackOverridesApp?include_prereleases=false&label=release&color=10b981&logo=github)](https://github.com/KsAkira10/BackOverridesApp/releases/latest)
+[![Release Candidate](https://img.shields.io/github/v/release/KsAkira10/BackOverridesApp?include_prereleases=true&label=rc&color=f59e0b&logo=github)](https://github.com/KsAkira10/BackOverridesApp/releases)
+[![Extension Manifest](https://img.shields.io/badge/extension-Manifest%20V3-a855f7?logo=googlechrome&logoColor=white)](https://github.com/KsAkira10/BackOverridesApp/releases/latest)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-38bdf8?style=flat&logo=githubpages&logoColor=white)](https://ksakira10.github.io/BackOverridesApp/#extension)
+
+> 📖 **Documentação Completa:** [https://ksakira10.github.io/BackOverridesApp/#extension](https://ksakira10.github.io/BackOverridesApp/#extension)
+
 Esta extensão intercepta requisições de rede diretamente na camada de rede do navegador (via `chrome.declarativeNetRequest`), permitindo:
 - **Redirecionamento de endpoints assíncronos (`fetch` / `XMLHttpRequest`)** sem trocar URLs no frontend.
 - **Redirecionamento de navegações de tela cheia (`main_frame`)**, como o fluxo de login OAuth (`window.location.href = .../authorize`), enviando o navegador para o seu BFF local de forma transparente.

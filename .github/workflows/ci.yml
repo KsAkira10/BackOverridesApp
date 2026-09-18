@@ -7,8 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  commit-lint:
-    name: Validate Conventional Commits
+  pr-guardrails:
+    name: PR Guardrails & Security
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -17,7 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check Commit Messages
+      - name: Validate Conventional Commits
         run: |
           echo "Verificando mensagens de commits no Pull Request..."
           COMMITS=$(git log origin/${{ github.base_ref }}..HEAD --format="%s")
@@ -40,6 +40,66 @@ jobs:
               process.exit(1);
             }
           ' "$COMMITS"
+
+      - name: Security & Sanitization Guardrails
+        run: |
+          echo "Executando guardrails de sanitização de segurança..."
+          node -e '
+            const { execSync } = require("child_process");
+            const baseRef = process.env.BASE_REF || "origin/main";
+            let diff = "";
+            try {
+              // Exclude ci.yml itself to prevent regex definitions from triggering false positives
+              diff = execSync(`git diff ${baseRef}...HEAD -- . ":!.github/workflows/ci.yml"`, { encoding: "utf8" });
+            } catch (e) {
+              diff = "";
+            }
+
+            // Inspect only lines added in this PR (lines starting with +)
+            const addedLines = diff
+              .split("\n")
+              .filter(line => line.startsWith("+") && !line.startsWith("+++"))
+              .map(line => line.slice(1))
+              .join("\n");
+
+            // Decoded from base64 to prevent raw strings from existing in repository
+            const forbiddenKeywords = [
+              Buffer.from("ZmUtcG9ydGFsLWRldg==", "base64").toString("utf8"),
+              Buffer.from("YmZmLWVjb3NzaXN0ZW1hLXRlY2g=", "base64").toString("utf8"),
+              Buffer.from("cmVkZWNvcnA=", "base64").toString("utf8")
+            ];
+
+            const secretPatterns = [
+              /ghp_[a-zA-Z0-9]{36}/,
+              /npm_[a-zA-Z0-9]{36}/,
+              /-----BEGIN (RSA|EC|OPENSSH|PRIVATE) KEY-----/
+            ];
+
+            let foundViolations = 0;
+
+            for (const word of forbiddenKeywords) {
+              const regex = new RegExp(word, "i");
+              if (regex.test(addedLines)) {
+                console.error("🚨 VIOLAÇÃO DE SEGURANÇA DETECTADA (termo corporativo proibido):", word);
+                foundViolations++;
+              }
+            }
+
+            for (const pattern of secretPatterns) {
+              if (pattern.test(addedLines)) {
+                console.error("🚨 VIOLAÇÃO DE SEGURANÇA DETECTADA (padrão de segredo/chave privada):", pattern);
+                foundViolations++;
+              }
+            }
+
+            if (foundViolations > 0) {
+              console.error("\nGuardrail bloqueado: Foram identificadas credenciais, chaves privadas ou domínios corporativos privados no diff do Pull Request.");
+              process.exit(1);
+            }
+            console.log("✅ Guardrail de sanitização aprovado: nenhum dado sensível encontrado.");
+          '
+        env:
+          BASE_REF: origin/${{ github.base_ref }}
 
   test:
     name: Test & Build (Node ${{ matrix.node-version }})

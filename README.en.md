@@ -4,6 +4,27 @@
 
 > 🌐 **Language / Idioma:** [🇧🇷 Português](./README.md) | [🇺🇸 English](./README.en.md)
 
+<div align="center">
+
+[![CI Status](https://github.com/KsAkira10/BackOverridesApp/actions/workflows/ci.yml/badge.svg)](https://github.com/KsAkira10/BackOverridesApp/actions/workflows/ci.yml)
+[![Pages Status](https://github.com/KsAkira10/BackOverridesApp/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/KsAkira10/BackOverridesApp/actions/workflows/deploy-pages.yml)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-38bdf8?style=flat&logo=githubpages&logoColor=white)](https://ksakira10.github.io/BackOverridesApp/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
+<br />
+
+[![Latest Release](https://img.shields.io/github/v/release/KsAkira10/BackOverridesApp?include_prereleases=false&label=release&color=10b981&logo=github)](https://github.com/KsAkira10/BackOverridesApp/releases/latest)
+[![Release Candidate](https://img.shields.io/github/v/release/KsAkira10/BackOverridesApp?include_prereleases=true&label=rc&color=f59e0b&logo=github)](https://github.com/KsAkira10/BackOverridesApp/releases)
+[![@back-overrides/cli](https://img.shields.io/npm/v/@back-overrides/cli?label=%40back-overrides%2Fcli&color=0284c7&logo=npm)](https://www.npmjs.com/package/@back-overrides/cli)
+[![@back-overrides/core](https://img.shields.io/npm/v/@back-overrides/core?label=%40back-overrides%2Fcore&color=0284c7&logo=npm)](https://www.npmjs.com/package/@back-overrides/core)
+[![@back-overrides/client](https://img.shields.io/npm/v/@back-overrides/client?label=%40back-overrides%2Fclient&color=0284c7&logo=npm)](https://www.npmjs.com/package/@back-overrides/client)
+[![Chrome Extension](https://img.shields.io/badge/extension-Chrome%20%2F%20Edge-a855f7?logo=googlechrome&logoColor=white)](https://github.com/KsAkira10/BackOverridesApp/releases/latest)
+
+</div>
+
+> 📖 **Interactive Online Documentation:** Visit our full GitHub Pages portal with live real-time routing simulator and guides: **[https://ksakira10.github.io/BackOverridesApp/](https://ksakira10.github.io/BackOverridesApp/)**  
+> 🤝 **Contributing:** Read our [Contribution Guide (InnerSource & Outsource)](./CONTRIBUTING.en.md) for PR workflows, guardrails, and Copilot code review.
+
 ---
 
 ## 💡 About the Project
