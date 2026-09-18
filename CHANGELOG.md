@@ -2,6 +2,13 @@
 
 Todas as mudanças notáveis no projeto **BackOverrides** são documentadas neste arquivo de acordo com as diretrizes do [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [v0.4.0] - 2026-09-18
+
+### ✨ Features
+
+- add automatic port fallback and runtime discovery for CLI proxy and client (#4) ([f302402](https://github.com/KsAkira10/BackOverridesApp/commit/f302402502b2b6310ae2b0938ddc6e4777d3728d))
+
+
 ## [v0.3.0] - 2026-09-18
 
 ### ✨ Features
