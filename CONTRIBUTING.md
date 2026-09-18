@@ -2,24 +2,19 @@
 
 > 🌐 **Language / Idioma:** [🇧🇷 Português](./CONTRIBUTING.md) | [🇺🇸 English](./CONTRIBUTING.en.md)
 
-Obrigado pelo interesse em contribuir com o **BackOverrides**! Este projeto é construído para desenvolvedores que valorizam agilidade, excelência técnica e integridade de arquitetura em ambientes corporativos e abertos.
+Obrigado pelo interesse em contribuir com o **BackOverrides**! Este projeto é construído para desenvolvedores que valorizam agilidade, excelência técnica e integridade de arquitetura.
 
 ---
 
-## 🏛️ Modelos de Colaboração: InnerSource vs Outsource
+## 🌍 Princípios de Colaboração Open Source
 
-O **BackOverrides** foi projetado para operar com excelência em dois modelos de desenvolvimento:
+O **BackOverrides** é um projeto **100% de código aberto** sob licença **MIT**, construído de forma colaborativa pela comunidade para desenvolvedores e squads de todo o mundo.
 
-### 1. InnerSource (Dentro da Empresa / Entre Squads)
-*InnerSource* é a aplicação das melhores práticas do código aberto dentro das fronteiras de uma organização:
-- **Adeus aos Silos:** Qualquer engenheiro ou squad que utilize o BackOverrides para simular suas APIs pode sugerir melhorias, novos matchers ou suporte a novos protocolos diretamente via Pull Request, sem depender de uma fila centralizada de suporte.
-- **Transparência e Autonomia:** O repositório centraliza os pacotes `@back-overrides/core`, `@back-overrides/client`, `@back-overrides/cli` e a extensão. As decisões de arquitetura e discussões são registradas em PRs e Issues abertas para toda a empresa.
-- **Reuso Corporativo:** Evita que diferentes times criem soluções caseiras de proxy reverso e interceptação de CORS, unificando a governança técnica.
-
-### 2. Outsource / Open Source (Comunidade Pública)
-No modelo aberto sob licença **MIT**:
-- **Colaboração Global:** Desenvolvedores do mundo todo colaboram adicionando compatibilidade com frameworks (Single-SPA, Module Federation, Next.js, Vite), navegadores (Chrome, Edge, Firefox) e novos padrões W3C (como Private Network Access).
-- **Sanitização Absoluta:** Toda contribuição pública **deve ser rigorosamente agnóstica**, livre de domínios corporativos privados, tokens, credenciais ou lógicas proprietárias de empresas específicas.
+Nossos princípios de desenvolvimento aberto incluem:
+- **Transparência e Governança Aberta:** Todas as decisões técnicas, roadmaps e melhorias são debatidos e documentados publicamente através de Issues e Pull Requests.
+- **Ecossistema e Interoperabilidade:** A comunidade colabora ativamente adicionando compatibilidade com frameworks modernos (Single-SPA, Module Federation, Next.js, Vite), navegadores (Chrome, Edge, Firefox) e novos padrões W3C (como Private Network Access).
+- **Sanitização Rigorosa & Neutralidade:** Por ser um repositório público, todas as contribuições **devem ser estritamente agnósticas**, sem qualquer menção a domínios corporativos privados, tokens, credenciais, chaves internas ou lógicas proprietárias de organizações específicas.
+- **Qualidade & Segurança Contínua:** Incentivamos cobertura de testes automatizados, manuseio seguro de cabeçalhos CORS e conformidade com versionamento semântico (SemVer) em cada entrega.
 
 ---
 
