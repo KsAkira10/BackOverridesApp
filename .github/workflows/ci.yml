@@ -7,6 +7,40 @@ on:
     branches: [main]
 
 jobs:
+  commit-lint:
+    name: Validate Conventional Commits
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check Commit Messages
+        run: |
+          echo "Verificando mensagens de commits no Pull Request..."
+          COMMITS=$(git log origin/${{ github.base_ref }}..HEAD --format="%s")
+          node -e '
+            const raw = process.argv[1];
+            const commits = raw.split("\n").map(s => s.trim()).filter(Boolean);
+            const regex = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-zA-Z0-9_.-]+\))?(!)?: .+/;
+            let errors = 0;
+            for (const c of commits) {
+              if (c.startsWith("Merge ")) continue;
+              if (!regex.test(c)) {
+                console.error("❌ Commit fora do padrão Conventional Commits:", c);
+                errors++;
+              } else {
+                console.log("✅ Válido:", c);
+              }
+            }
+            if (errors > 0) {
+              console.error(`\nErro: ${errors} commit(s) não seguem o padrão Conventional Commits (ex: feat(core): ..., fix: ...).`);
+              process.exit(1);
+            }
+          ' "$COMMITS"
+
   test:
     name: Test & Build (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
