@@ -2,6 +2,13 @@
 
 Todas as mudanças notáveis no projeto **BackOverrides** são documentadas neste arquivo de acordo com as diretrizes do [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [v0.3.0] - 2026-09-18
+
+### ✨ Features
+
+- **release**: clean up obsolete release candidate tags and pre-releases on main merge (#3) ([21dabc6](https://github.com/KsAkira10/BackOverridesApp/commit/21dabc6913fe9e68dbedb8a10402304a9c823384))
+
+
 ## [v0.2.1] - 2026-09-18
 
 ### 🐛 Bug Fixes
