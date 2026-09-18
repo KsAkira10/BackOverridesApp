@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "build": "npm run --workspace=@back-overrides/core build && npm run --workspace=@back-overrides/client build && npm run --workspace=@back-overrides/cli build",
+    "pretest": "npm run build",
     "test": "npm run --workspace=@back-overrides/core test && npm run --workspace=@back-overrides/client test && npm run --workspace=@back-overrides/cli test",
     "start": "npm run --workspace=@back-overrides/cli start",
     "demo": "bash examples/run-demo.sh",

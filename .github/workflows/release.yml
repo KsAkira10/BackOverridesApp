@@ -35,11 +35,11 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Run Tests
-        run: npm test
-
       - name: Build All Workspaces
         run: npm run build
+
+      - name: Run Tests
+        run: npm test
 
       - name: Package Chrome/Edge Extension
         run: |
