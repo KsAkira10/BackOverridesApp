@@ -49,24 +49,45 @@ jobs:
             const baseRef = process.env.BASE_REF || "origin/main";
             let diff = "";
             try {
-              diff = execSync(`git diff ${baseRef}...HEAD`, { encoding: "utf8" });
+              // Exclude ci.yml itself to prevent regex definitions from triggering false positives
+              diff = execSync(`git diff ${baseRef}...HEAD -- . ":!.github/workflows/ci.yml"`, { encoding: "utf8" });
             } catch (e) {
               diff = "";
             }
 
-            const forbiddenPatterns = [
-              /fe-portal-dev/i,
-              /bff-ecossistema-tech/i,
-              /redecorp/i,
+            // Inspect only lines added in this PR (lines starting with +)
+            const addedLines = diff
+              .split("\n")
+              .filter(line => line.startsWith("+") && !line.startsWith("+++"))
+              .map(line => line.slice(1))
+              .join("\n");
+
+            // Decoded from base64 to prevent raw strings from existing in repository
+            const forbiddenKeywords = [
+              Buffer.from("ZmUtcG9ydGFsLWRldg==", "base64").toString("utf8"),
+              Buffer.from("YmZmLWVjb3NzaXN0ZW1hLXRlY2g=", "base64").toString("utf8"),
+              Buffer.from("cmVkZWNvcnA=", "base64").toString("utf8")
+            ];
+
+            const secretPatterns = [
               /ghp_[a-zA-Z0-9]{36}/,
               /npm_[a-zA-Z0-9]{36}/,
               /-----BEGIN (RSA|EC|OPENSSH|PRIVATE) KEY-----/
             ];
 
             let foundViolations = 0;
-            for (const pattern of forbiddenPatterns) {
-              if (pattern.test(diff)) {
-                console.error("🚨 VIOLAÇÃO DE SEGURANÇA DETECTADA:", pattern);
+
+            for (const word of forbiddenKeywords) {
+              const regex = new RegExp(word, "i");
+              if (regex.test(addedLines)) {
+                console.error("🚨 VIOLAÇÃO DE SEGURANÇA DETECTADA (termo corporativo proibido):", word);
+                foundViolations++;
+              }
+            }
+
+            for (const pattern of secretPatterns) {
+              if (pattern.test(addedLines)) {
+                console.error("🚨 VIOLAÇÃO DE SEGURANÇA DETECTADA (padrão de segredo/chave privada):", pattern);
                 foundViolations++;
               }
             }
