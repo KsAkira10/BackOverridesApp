@@ -16,19 +16,24 @@
 <body>
 
   <!-- Top Navigation -->
+  <!-- Top Navigation -->
   <nav class="navbar" id="top-nav">
     <a href="#" class="nav-brand">
       <div class="brand-icon">⚡</div>
-      <span>BackOverrides</span>
+      <span class="brand-text">BackOverrides</span>
     </a>
 
-    <div class="nav-links">
+    <!-- Desktop Navigation Links -->
+    <div class="nav-links" id="desktop-nav-links">
       <a href="#quickstart" class="nav-link" data-i18n="nav_quickstart">Início Rápido</a>
       <a href="#modes" class="nav-link" data-i18n="nav_modes">3 Modos</a>
       <a href="#examples" class="nav-link" data-i18n="nav_examples">Exemplos Reais</a>
       <a href="#playground" class="nav-link" data-i18n="nav_playground">Simulador Live</a>
       <a href="#extension" class="nav-link" data-i18n="nav_extension">Extensão Chrome</a>
+    </div>
 
+    <!-- Actions (Language, GitHub, Mobile Menu Toggle) -->
+    <div class="nav-actions">
       <!-- Language Switcher Dropdown -->
       <div class="lang-switcher" id="lang-switcher">
         <button class="lang-btn" id="lang-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Mudar idioma / Change language">
@@ -52,14 +57,80 @@
         </div>
       </div>
 
-      <a href="https://github.com/KsAkira10/BackOverridesApp" target="_blank" rel="noopener" class="nav-btn">
+      <a href="https://github.com/KsAkira10/BackOverridesApp" target="_blank" rel="noopener" class="nav-btn" aria-label="GitHub">
         <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
           <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
         </svg>
-        GitHub
+        <span class="nav-btn-text">GitHub</span>
       </a>
+
+      <!-- Mobile Hamburger Button -->
+      <button class="mobile-menu-btn" id="mobile-menu-btn" type="button" aria-label="Abrir menu de navegação" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
     </div>
   </nav>
+
+  <!-- Mobile Drawer Backdrop & Navigation -->
+  <div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop"></div>
+  <aside class="mobile-drawer" id="mobile-drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <div class="nav-brand">
+        <div class="brand-icon">⚡</div>
+        <span>BackOverrides</span>
+      </div>
+      <button class="drawer-close-btn" id="drawer-close-btn" type="button" aria-label="Fechar menu">✕</button>
+    </div>
+    <div class="drawer-content">
+      <div class="drawer-section-title" data-i18n="nav_menu_title">Navegação Principal</div>
+      <ul class="drawer-menu">
+        <li><a href="#quickstart" class="drawer-link" data-i18n="nav_quickstart">Início Rápido</a></li>
+        <li><a href="#modes" class="drawer-link" data-i18n="nav_modes">3 Modos</a></li>
+        <li><a href="#examples" class="drawer-link" data-i18n="nav_examples">Exemplos Reais</a></li>
+        <li><a href="#playground" class="drawer-link" data-i18n="nav_playground">Simulador Live</a></li>
+        <li><a href="#extension" class="drawer-link" data-i18n="nav_extension">Extensão Chrome</a></li>
+      </ul>
+
+      <div class="drawer-section-title" data-i18n="sidebar_getting_started">Começando</div>
+      <ul class="drawer-menu">
+        <li><a href="#intro" class="drawer-link" data-i18n="sidebar_overview">Visão Geral</a></li>
+        <li><a href="#problem" class="drawer-link" data-i18n="sidebar_problem">O Desafio de Rede</a></li>
+        <li><a href="#quickstart" class="drawer-link" data-i18n="sidebar_quickstart">Início Rápido (30s)</a></li>
+      </ul>
+
+      <div class="drawer-section-title" data-i18n="sidebar_architecture">Arquitetura</div>
+      <ul class="drawer-menu">
+        <li><a href="#modes" class="drawer-link" data-i18n="sidebar_modes">Os 3 Modos de Operação</a></li>
+        <li><a href="#cors-pna" class="drawer-link" data-i18n="sidebar_cors_pna">Resolução de CORS & PNA</a></li>
+      </ul>
+
+      <div class="drawer-section-title" data-i18n="sidebar_examples">Exemplos Práticos</div>
+      <ul class="drawer-menu">
+        <li><a href="#ex-basic" class="drawer-link" data-i18n="sidebar_ex_basic">1. REST Simples</a></li>
+        <li><a href="#ex-dynamic" class="drawer-link" data-i18n="sidebar_ex_dynamic">2. Rotas Dinâmicas & Wildcard</a></li>
+        <li><a href="#ex-single-spa" class="drawer-link" data-i18n="sidebar_ex_single_spa">3. Single-SPA + Fake BFF</a></li>
+        <li><a href="#ex-oauth" class="drawer-link" data-i18n="sidebar_ex_oauth">4. OAuth / SSO (main_frame)</a></li>
+      </ul>
+
+      <div class="drawer-section-title" data-i18n="sidebar_tools_docs">Ferramentas & Docs</div>
+      <ul class="drawer-menu">
+        <li><a href="#playground" class="drawer-link" data-i18n="sidebar_playground">Simulador Interativo Live</a></li>
+        <li><a href="#config-reference" class="drawer-link" data-i18n="sidebar_config_ref">Configuração JSON</a></li>
+        <li><a href="#extension" class="drawer-link" data-i18n="sidebar_extension">Extensão do Chrome</a></li>
+      </ul>
+
+      <div class="drawer-footer">
+        <a href="https://github.com/KsAkira10/BackOverridesApp" target="_blank" rel="noopener" class="drawer-github-btn">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+          </svg>
+          <span>GitHub Repository</span>
+        </a>
+      </div>
+    </div>
+  </aside>
 
   <div class="layout">
     <!-- Sidebar Navigation -->

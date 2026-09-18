@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCopyButtons();
   initPlayground();
   initScrollSpy();
+  initMobileMenu();
 });
 
 // Translation dictionary
@@ -12,6 +13,7 @@ const TRANSLATIONS = {
   'pt-BR': {
     page_title: 'BackOverrides — Interceptador Seletivo de Endpoints com Resolução de CORS',
     meta_description: 'Redirecione endpoints específicos de APIs remotas para o localhost sem alterar código no frontend, com resolução automática de CORS e suporte a Single-SPA e OAuth.',
+    nav_menu_title: 'Navegação Principal',
     nav_quickstart: 'Início Rápido',
     nav_modes: '3 Modos',
     nav_examples: 'Exemplos Reais',
@@ -152,6 +154,7 @@ const TRANSLATIONS = {
   'en': {
     page_title: 'BackOverrides — Selective Endpoint Interceptor with CORS Resolution',
     meta_description: 'Selectively redirect specific remote API endpoints to localhost without modifying frontend code, with automatic CORS resolution, Single-SPA and OAuth support.',
+    nav_menu_title: 'Main Navigation',
     nav_quickstart: 'Quickstart',
     nav_modes: '3 Modes',
     nav_examples: 'Real Examples',
@@ -699,5 +702,60 @@ function initScrollSpy() {
         link.classList.add('active');
       }
     });
+  });
+}
+
+// 5. Mobile Drawer Menu Navigation
+function initMobileMenu() {
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const closeBtn = document.getElementById('drawer-close-btn');
+  const drawer = document.getElementById('mobile-drawer');
+  const backdrop = document.getElementById('mobile-drawer-backdrop');
+  const drawerLinks = document.querySelectorAll('.drawer-link');
+
+  if (!menuBtn || !drawer || !backdrop) return;
+
+  function openMenu() {
+    drawer.classList.add('active');
+    backdrop.classList.add('active');
+    menuBtn.classList.add('open');
+    menuBtn.setAttribute('aria-expanded', 'true');
+    drawer.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    drawer.classList.remove('active');
+    backdrop.classList.remove('active');
+    menuBtn.classList.remove('open');
+    menuBtn.setAttribute('aria-expanded', 'false');
+    drawer.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  menuBtn.addEventListener('click', () => {
+    if (drawer.classList.contains('active')) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeMenu);
+  }
+
+  backdrop.addEventListener('click', closeMenu);
+
+  drawerLinks.forEach((link) => {
+    link.addEventListener('click', () => {
+      closeMenu();
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && drawer.classList.contains('active')) {
+      closeMenu();
+    }
   });
 }
