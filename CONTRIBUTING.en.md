@@ -2,24 +2,19 @@
 
 > 🌐 **Language / Idioma:** [🇧🇷 Português](./CONTRIBUTING.md) | [🇺🇸 English](./CONTRIBUTING.en.md)
 
-Thank you for your interest in contributing to **BackOverrides**! This project is built for developers who value agility, engineering excellence, and architectural integrity in both enterprise and open environments.
+Thank you for your interest in contributing to **BackOverrides**! This project is built for developers who value agility, engineering excellence, and architectural integrity.
 
 ---
 
-## 🏛️ Collaboration Models: InnerSource vs Outsource
+## 🌍 Open Source Collaboration Principles
 
-**BackOverrides** is engineered to thrive across two primary development paradigms:
+**BackOverrides** is a **100% open-source** project licensed under the **MIT** license, built collaboratively by the community for developers and engineering teams worldwide.
 
-### 1. InnerSource (Inside the Enterprise / Cross-Squad)
-*InnerSource* applies open-source best practices within the boundaries of an organization:
-- **No More Silos:** Any engineer or squad using BackOverrides to simulate backend APIs can propose improvements, new route matchers, or protocol adaptations directly via Pull Request without relying on a centralized backlog bottleneck.
-- **Transparency & Autonomy:** The repository unifies `@back-overrides/core`, `@back-overrides/client`, `@back-overrides/cli`, and the Chrome/Edge extension. Architectural discussions and decisions remain transparent and traceable across the entire company.
-- **Enterprise Reusability:** Prevents separate teams from creating incompatible ad-hoc reverse proxies or fragile CORS hacks, unifying technical governance.
-
-### 2. Outsource / Open Source (Global Public Community)
-Under the open **MIT** license:
-- **Global Collaboration:** Developers worldwide contribute compatibility with emerging frameworks (Single-SPA, Module Federation, Next.js, Vite), modern browsers (Chrome, Edge, Firefox), and W3C web standards (such as Private Network Access).
-- **Absolute Sanitization:** Every public contribution **must remain strictly environment-agnostic**, completely free from private corporate domains, internal hostnames, access tokens, credentials, or company-specific proprietary code.
+Our open collaboration principles include:
+- **Transparency & Open Governance:** All architectural decisions, discussions, and feature roadmaps happen openly and transparently through public Issues and Pull Requests.
+- **Ecosystem & Interoperability:** The community actively collaborates to add and improve compatibility with modern frontend architectures (Single-SPA, Module Federation, Next.js, Vite), modern browsers (Chrome, Edge, Firefox), and emerging W3C web standards (such as Private Network Access).
+- **Absolute Sanitization & Neutrality:** As a public repository, every contribution **must remain strictly environment-agnostic**, completely free from private corporate domains, internal hostnames, access tokens, credentials, or company-specific proprietary code.
+- **Continuous Quality & Security:** We champion automated testing, robust and secure CORS handling, and strict adherence to Semantic Versioning (SemVer) across all changes.
 
 ---
 
