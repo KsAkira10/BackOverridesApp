@@ -4,6 +4,7 @@ import {
   parseCommit,
   calculateNextVersion,
   getNextRcTag,
+  getRcTagsForVersion,
   getLatestStableTag,
   generateChangelogSection,
 } from '../scripts/semver-release.mjs';
@@ -114,6 +115,26 @@ describe('getNextRcTag', () => {
   it('correctly isolates RC numbers by target version', () => {
     const tag = getNextRcTag('0.1.1', ['v0.1.0', 'v0.2.0-rc.1', 'v0.2.0-rc.2']);
     assert.equal(tag, 'v0.1.1-rc.1');
+  });
+});
+
+describe('getRcTagsForVersion', () => {
+  it('returns all RC tags matching the target version', () => {
+    const tags = ['v0.1.0', 'v0.2.0-rc.1', 'v0.2.0-rc.2', 'v0.2.0-rc.3', 'v0.3.0-rc.1', 'v0.2.0'];
+    const rcs = getRcTagsForVersion('0.2.0', tags);
+    assert.deepEqual(rcs, ['v0.2.0-rc.1', 'v0.2.0-rc.2', 'v0.2.0-rc.3']);
+  });
+
+  it('handles version string with leading v prefix', () => {
+    const tags = ['v0.2.0-rc.1', 'v0.2.0-rc.2'];
+    const rcs = getRcTagsForVersion('v0.2.0', tags);
+    assert.deepEqual(rcs, ['v0.2.0-rc.1', 'v0.2.0-rc.2']);
+  });
+
+  it('returns empty array when no matching RC tags exist', () => {
+    const tags = ['v0.1.0', 'v0.2.0', 'v0.3.0-rc.1'];
+    const rcs = getRcTagsForVersion('0.2.0', tags);
+    assert.deepEqual(rcs, []);
   });
 });
 
