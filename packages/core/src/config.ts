@@ -1,4 +1,4 @@
-import type { BackOverridesConfig, HttpMethod, OverrideRule } from './types.js';
+import { DEFAULT_PROXY_PORT, type BackOverridesConfig, type HttpMethod, type OverrideRule } from './types.js';
 
 const VALID_METHODS: HttpMethod[] = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', '*'];
 
@@ -67,7 +67,8 @@ export function normalizeConfig(config: Partial<BackOverridesConfig>): BackOverr
 
   const remote = config.remote.trim().replace(/\/+$/, '');
   const local = (config.local || 'http://localhost:3000').trim().replace(/\/+$/, '');
-  const port = config.port ?? 8080;
+  const port = config.port ?? DEFAULT_PROXY_PORT;
+  const autoPort = config.autoPort ?? true;
 
   const overrides: OverrideRule[] = (config.overrides || []).map((rule, idx) => {
     if (!rule.path) {
@@ -86,6 +87,7 @@ export function normalizeConfig(config: Partial<BackOverridesConfig>): BackOverr
 
   return {
     port,
+    autoPort,
     remote,
     local,
     cors: {
@@ -102,4 +104,13 @@ export function normalizeConfig(config: Partial<BackOverridesConfig>): BackOverr
     silent: Boolean(config.silent),
     secure: config.secure ?? false,
   };
+}
+
+/**
+ * Validates whether an HTTP JSON response payload corresponds to a BackOverrides server.
+ */
+export function isBackOverridesRulesResponse(data: unknown): boolean {
+  if (!data || typeof data !== 'object') return false;
+  const obj = data as Record<string, unknown>;
+  return typeof obj.remote === 'string' || Array.isArray(obj.overrides);
 }

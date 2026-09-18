@@ -86,35 +86,118 @@ async function syncDynamicRules() {
   console.log(`[BackOverrides Extension] Applied ${newRules.length} dynamic redirect & CORS rules (including main_frame).`);
 }
 
-async function autoSyncFromCli(cliUrl = 'http://localhost:8888') {
+async function discoverCliUrl(startPort = 8888, range = 20) {
+  const checkPort = async (port) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 350);
+    try {
+      const res = await fetch(`http://localhost:${port}/__back-overrides/status`, {
+        signal: controller.signal,
+        headers: { Accept: 'application/json' },
+      });
+      if (res.ok) {
+        const data = await res.json().catch(() => null);
+        if (data && (data.status === 'ok' || data.app === 'back-overrides')) {
+          return true;
+        }
+      }
+    } catch {
+      try {
+        const rulesRes = await fetch(`http://localhost:${port}/__back-overrides/rules`, {
+          signal: controller.signal,
+          headers: { Accept: 'application/json' },
+        });
+        if (rulesRes.ok) {
+          const data = await rulesRes.json().catch(() => null);
+          if (data && (typeof data.remote === 'string' || Array.isArray(data.overrides))) {
+            return true;
+          }
+        }
+      } catch {
+        return false;
+      }
+    } finally {
+      clearTimeout(timeoutId);
+    }
+    return false;
+  };
+
+  if (await checkPort(startPort)) {
+    return `http://localhost:${startPort}`;
+  }
+
+  for (let offset = 1; offset < range; offset++) {
+    const port = startPort + offset;
+    if (await checkPort(port)) {
+      return `http://localhost:${port}`;
+    }
+  }
+
+  return null;
+}
+
+async function fetchConfigWithFallback(preferredUrl) {
+  const targetUrl = (preferredUrl || 'http://localhost:8888').replace(/\/+$/, '');
+
+  // 1. Try preferred URL first
   try {
-    const res = await fetch(`${cliUrl}/__back-overrides/rules`);
-    if (!res.ok) return;
-    const config = await res.json();
-
-    const convertedRules = (config.overrides || []).map((o) => {
-      const remoteUrl = (config.remote || '').replace(/\/+$/, '');
-      const targetBase = (cliUrl || 'http://localhost:8888').replace(/\/+$/, '');
-
-      const escapedRemote = remoteUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const cleanPath = (o.path || '').replace(/\*$/, '(.*)');
-      const sourceRegex = `^${escapedRemote}${cleanPath}`;
-      const targetPattern = `${targetBase}${cleanPath.replace(/\(\.\*\)$/, '\\1')}`;
-
-      return {
-        sourceRegex,
-        targetPattern,
-        methods: o.methods && !o.methods.includes('*') ? o.methods : [],
-      };
-    });
-
-    if (convertedRules.length > 0) {
-      await chrome.storage.local.set({ rules: convertedRules, cliUrl });
-      await syncDynamicRules();
-      console.log(`[BackOverrides Extension] Auto-synced ${convertedRules.length} rule(s) from CLI.`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 500);
+    const res = await fetch(`${targetUrl}/__back-overrides/rules`, { signal: controller.signal });
+    clearTimeout(timeoutId);
+    if (res.ok) {
+      const config = await res.json();
+      return { config, cliUrl: targetUrl };
     }
   } catch {
-    // CLI is offline or unreachable on startup, keep existing stored rules
+    // Fall through to auto-discovery
+  }
+
+  // 2. Discover active port
+  const discoveredUrl = await discoverCliUrl(8888, 20);
+  if (discoveredUrl) {
+    const res = await fetch(`${discoveredUrl}/__back-overrides/rules`);
+    if (res.ok) {
+      const config = await res.json();
+      return { config, cliUrl: discoveredUrl };
+    }
+  }
+
+  throw new Error('Nenhum servidor BackOverrides ativo encontrado (portas 8888-8908 offline).');
+}
+
+function convertRules(config, cliUrl) {
+  const remoteUrl = (config.remote || '').replace(/\/+$/, '');
+  const targetBase = (cliUrl || 'http://localhost:8888').replace(/\/+$/, '');
+  const escapedRemote = remoteUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+  return (config.overrides || []).map((o) => {
+    const cleanPath = (o.path || '').replace(/\*$/, '(.*)');
+    const sourceRegex = `^${escapedRemote}${cleanPath}`;
+    const targetPattern = `${targetBase}${cleanPath.replace(/\(\.\*\)$/, '\\1')}`;
+
+    return {
+      sourceRegex,
+      targetPattern,
+      methods: o.methods && !o.methods.includes('*') ? o.methods : [],
+    };
+  });
+}
+
+async function autoSyncFromCli(preferredCliUrl) {
+  try {
+    const stored = await chrome.storage.local.get(['cliUrl']);
+    const targetUrl = preferredCliUrl || stored.cliUrl || 'http://localhost:8888';
+    const { config, cliUrl } = await fetchConfigWithFallback(targetUrl);
+    const convertedRules = convertRules(config, cliUrl);
+
+    if (convertedRules.length > 0 || config) {
+      await chrome.storage.local.set({ rules: convertedRules, cliUrl });
+      await syncDynamicRules();
+      console.log(`[BackOverrides Extension] Auto-synced ${convertedRules.length} rule(s) from CLI at ${cliUrl}.`);
+    }
+  } catch {
+    // CLI is offline or unreachable, keep existing stored rules
   }
 }
 
@@ -132,7 +215,7 @@ chrome.runtime.onStartup?.addListener(() => {
 });
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === 'local') {
+  if (area === 'local' && (changes.enabled || changes.rules)) {
     syncDynamicRules();
   }
 });
@@ -141,36 +224,45 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'SYNC_FROM_CLI') {
     (async () => {
       try {
-        const cliUrl = request.cliUrl || 'http://localhost:8888';
-        const res = await fetch(`${cliUrl}/__back-overrides/rules`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const config = await res.json();
-
-        // Convert CLI config to extension rules format
-        const convertedRules = (config.overrides || []).map((o) => {
-          const remoteUrl = (config.remote || '').replace(/\/+$/, '');
-          const targetBase = (cliUrl || 'http://localhost:8888').replace(/\/+$/, '');
-
-          // Escape regex characters in remote URL
-          const escapedRemote = remoteUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          const cleanPath = (o.path || '').replace(/\*$/, '(.*)');
-          const sourceRegex = `^${escapedRemote}${cleanPath}`;
-          const targetPattern = `${targetBase}${cleanPath.replace(/\(\.\*\)$/, '\\1')}`;
-
-          return {
-            sourceRegex,
-            targetPattern,
-            methods: o.methods && !o.methods.includes('*') ? o.methods : [],
-          };
-        });
+        const stored = await chrome.storage.local.get(['cliUrl']);
+        const preferred = request.cliUrl || stored.cliUrl || 'http://localhost:8888';
+        const { config, cliUrl } = await fetchConfigWithFallback(preferred);
+        const convertedRules = convertRules(config, cliUrl);
 
         await chrome.storage.local.set({ rules: convertedRules, cliUrl });
         await syncDynamicRules();
-        sendResponse({ success: true, count: convertedRules.length });
+
+        const urlObj = new URL(cliUrl);
+        sendResponse({
+          success: true,
+          count: convertedRules.length,
+          cliUrl,
+          port: urlObj.port || '80',
+        });
       } catch (err) {
         sendResponse({ success: false, error: err.message });
       }
     })();
     return true; // async sendResponse
+  }
+
+  if (request.type === 'GET_CLI_STATUS') {
+    (async () => {
+      try {
+        const stored = await chrome.storage.local.get(['cliUrl']);
+        const currentUrl = stored.cliUrl || 'http://localhost:8888';
+        try {
+          const { cliUrl } = await fetchConfigWithFallback(currentUrl);
+          const urlObj = new URL(cliUrl);
+          sendResponse({ online: true, cliUrl, port: urlObj.port || '80' });
+        } catch {
+          const urlObj = new URL(currentUrl);
+          sendResponse({ online: false, cliUrl: currentUrl, port: urlObj.port || '80' });
+        }
+      } catch {
+        sendResponse({ online: false, cliUrl: 'http://localhost:8888', port: '8888' });
+      }
+    })();
+    return true;
   }
 });

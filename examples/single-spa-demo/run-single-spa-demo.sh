@@ -45,7 +45,7 @@ echo "🧪 [2] Teste: GET /bff/core/v1/catalog"
 echo "    -> Deve ir para a NUVEM REMOTA (Porta 9001)"
 echo "----------------------------------------------------------"
 curl -s "http://localhost:8889/bff/core/v1/catalog" \
-  -H "Origin: http://localhost:5173" | grep -q "Enterprise Cloud DB" && echo "✅ SUCESSO: Catálogo carregado da nuvem oficial!"
+  -H "Origin: http://localhost:5173" | grep -q "Cloud DB" && echo "✅ SUCESSO: Catálogo carregado da nuvem oficial!"
 
 echo -e "\n----------------------------------------------------------"
 echo "🧪 [3] Teste: POST /bff/core/v1/orders"
@@ -61,7 +61,7 @@ echo "🧪 [4] Teste: GET /bff/core/v1/oauth2/authorize"
 echo "    -> Deve redirecionar para o novo IdP do BFF LOCAL"
 echo "----------------------------------------------------------"
 curl -s -i "http://localhost:8889/bff/core/v1/oauth2/authorize" \
-  -H "Origin: http://localhost:5173" | grep -q "new-sso.enterprise-idp.corp" && echo "✅ SUCESSO: Authorize redirecionado para o IdP local!"
+  -H "Origin: http://localhost:5173" | grep -q "new-sso.idp.example.io" && echo "✅ SUCESSO: Authorize redirecionado para o IdP local!"
 
 echo -e "\n=========================================================="
 echo "🎉 Todos os testes do cenário Single-SPA + Fake BFF passaram!"

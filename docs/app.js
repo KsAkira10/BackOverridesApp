@@ -178,7 +178,7 @@ const TRANSLATIONS = {
     hero_desc: '<strong>BackOverrides</strong> selectively intercepts specific remote API endpoints and redirects them to your <code>localhost</code>, automatically solving <strong>CORS</strong>, <strong>Private Network Access (PNA)</strong> barriers, and <strong>OAuth</strong> full-page redirects without touching a single line of frontend code.',
     hero_cta_start: '🚀 Quickstart',
     hero_cta_playground: '⚡ Try Live Simulator',
-    problem_tag: 'Enterprise Scenario',
+    problem_tag: 'Production Scenario',
     problem_title: 'The Challenge of Local Dev with Remote Cloud',
     problem_desc: 'Why changing base URLs in the frontend disrupts your development workflow.',
     problem_c1_title: 'CORS & PNA Blockers',
@@ -263,13 +263,13 @@ const TRANSLATIONS = {
     cfg_desc_overrides: 'List of routing rules (with <code>methods</code>, <code>path</code>, <code>target</code>, <code>passthrough</code>).',
     ext_tag: 'Zero Code',
     ext_title: 'Extension for Google Chrome & Edge',
-    ext_desc: 'Install once and intercept enterprise endpoints without touching code repositories.',
+    ext_desc: 'Install once and intercept remote endpoints without touching code repositories.',
     ext_c1_title: 'Load in Browser',
     ext_c1_desc: 'Open <code>chrome://extensions</code>, toggle on <strong>Developer mode</strong>, and click <strong>Load unpacked</strong> pointing to <code>packages/extension</code>.',
     ext_c2_title: '1-Click Sync',
     ext_c2_desc: 'The extension automatically connects to the BackOverrides CLI (<code>http://localhost:8888</code>) and imports all rules from your <code>back-overrides.json</code> dynamically.',
     ext_c3_title: 'main_frame Support',
-    ext_c3_desc: 'Intercepts not just <code>fetch</code> and <code>XHR</code>, but also full-page navigations like enterprise OAuth/SSO login flows.',
+    ext_c3_desc: 'Intercepts not just <code>fetch</code> and <code>XHR</code>, but also full-page navigations like remote OAuth/SSO login flows.',
     footer_text: '<strong>BackOverrides</strong> — MIT Licensed. Built for developers who value agility.',
     footer_back_to_top: 'Back to Top ↑',
     copy_text: 'Copy',
@@ -494,7 +494,7 @@ function initPlayground() {
         },
         body: {
           user: 'Jane Doe',
-          email: 'jane.doe@enterprise.corp',
+          email: 'jane.doe@example.com',
           role: 'Standard User',
           cluster: 'Cloud Production (us-east-1)',
         },
@@ -513,7 +513,7 @@ function initPlayground() {
         body: {
           source: 'Remote Cloud Catalog Service',
           products: [
-            { id: 'db-1', name: 'Enterprise Cloud DB', price: '$299/mo' },
+            { id: 'db-1', name: 'Cloud DB', price: '$299/mo' },
             { id: 'k8s-1', name: 'Managed Kubernetes', price: '$850/mo' },
           ],
         },
@@ -569,7 +569,7 @@ function initPlayground() {
       localResponse: {
         status: 302,
         headers: {
-          Location: 'https://new-sso.enterprise-idp.corp/as/authorization.oauth2?client_id=local_dev_client',
+          Location: 'https://new-sso.idp.example.io/as/authorization.oauth2?client_id=local_dev_client',
           'x-back-overrides-target': 'http://localhost:8080/bff/core/v1/oauth2/authorize',
           'x-back-overrides-nav-hint': 'For top-level browser redirects, ensure BackOverrides Extension is active',
         },

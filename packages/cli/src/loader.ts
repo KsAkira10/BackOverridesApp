@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import YAML from 'yaml';
 import {
+  DEFAULT_PROXY_PORT,
   type BackOverridesConfig,
   type OverrideRule,
   normalizeConfig,
@@ -12,6 +13,7 @@ export interface CliOptions {
   remote?: string;
   local?: string;
   port?: string | number;
+  autoPort?: boolean;
   config?: string;
   override?: string[];
   cors?: boolean;
@@ -92,7 +94,8 @@ export function loadConfig(options: CliOptions = {}, cwd: string = process.cwd()
   const mergedConfig: Partial<BackOverridesConfig> = {
     remote: options.remote || fileConfig.remote,
     local: options.local || fileConfig.local || 'http://localhost:3000',
-    port: options.port !== undefined ? Number(options.port) : fileConfig.port ?? 8080,
+    port: options.port !== undefined ? Number(options.port) : fileConfig.port ?? DEFAULT_PROXY_PORT,
+    autoPort: options.autoPort !== undefined ? options.autoPort : fileConfig.autoPort ?? true,
     cors: {
       ...fileConfig.cors,
       enabled: options.cors !== undefined ? options.cors : fileConfig.cors?.enabled ?? true,
@@ -109,7 +112,7 @@ export function loadConfig(options: CliOptions = {}, cwd: string = process.cwd()
  */
 export function generateStarterConfig(): BackOverridesConfig {
   return {
-    port: 8080,
+    port: DEFAULT_PROXY_PORT,
     remote: 'https://api.example.com',
     local: 'http://localhost:3000',
     cors: {

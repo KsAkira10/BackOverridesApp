@@ -40,9 +40,9 @@ Doing this directly in the browser introduces **three major network roadblocks**
 
 ---
 
-## 🏢 Real Enterprise Scenario: Single-SPA + Import Maps + BFF + Microservices
+## 🏢 Real-World Scenario: Single-SPA + Import Maps + BFF + Microservices
 
-This is the most common real-world architecture in enterprise development:
+This is the most common real-world architecture in modern microfrontend development:
 
 ```
                   ┌─────────────────────────────────────────────────────────┐

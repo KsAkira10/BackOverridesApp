@@ -127,6 +127,18 @@
       background: #10b981;
       border-radius: 50%;
       box-shadow: 0 0 6px #10b981;
+    .port-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+    .badge-dot.offline {
+      background: #f87171;
+      box-shadow: 0 0 6px #f87171;
     }
   </style>
 </head>
@@ -154,8 +166,13 @@
     </div>
   </div>
 
+  <div class="port-badge" id="port-badge">
+    <span class="badge-dot" id="port-dot"></span>
+    <span id="port-text">CLI: localhost:8888</span>
+  </div>
+
   <button class="btn" id="btn-sync">
-    🔄 Sincronizar com CLI (localhost:8888)
+    🔄 Sincronizar com CLI
   </button>
   <div class="status" id="status-msg"></div>
 

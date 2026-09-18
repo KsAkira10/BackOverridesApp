@@ -43,7 +43,7 @@ const server = http.createServer((req, res) => {
   // 2. OAuth Authorize (New SSO / Identity Provider being tested locally)
   if (pathname === '/bff/core/v1/oauth2/authorize') {
     res.writeHead(302, {
-      Location: 'https://new-sso.enterprise-idp.corp/as/authorization.oauth2?client_id=local_bff_dev_app',
+      Location: 'https://new-sso.idp.example.io/as/authorization.oauth2?client_id=local_bff_dev_app',
     });
     res.end();
     return;

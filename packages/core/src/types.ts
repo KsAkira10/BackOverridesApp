@@ -78,12 +78,20 @@ export interface CorsConfig {
   exposeHeaders?: string[] | string;
 }
 
+export const DEFAULT_PROXY_PORT = 8888;
+export const DEFAULT_PORT_SCAN_RANGE = 20;
+
 export interface BackOverridesConfig {
   /**
    * Local port on which the proxy will listen.
-   * Default: 8080.
+   * Default: 8888.
    */
   port?: number;
+  /**
+   * Automatically resolve and switch to the next available port if the specified port is in use.
+   * Default: true.
+   */
+  autoPort?: boolean;
   /**
    * Remote base API URL (e.g. https://api.example.com).
    */
