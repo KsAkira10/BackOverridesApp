@@ -22,7 +22,8 @@
 
 </div>
 
-> 📖 **Interactive Online Documentation:** Visit our full GitHub Pages portal with live real-time routing simulator and guides: **[https://ksakira10.github.io/BackOverridesApp/](https://ksakira10.github.io/BackOverridesApp/)**
+> 📖 **Interactive Online Documentation:** Visit our full GitHub Pages portal with live real-time routing simulator and guides: **[https://ksakira10.github.io/BackOverridesApp/](https://ksakira10.github.io/BackOverridesApp/)**  
+> 🤝 **Contributing:** Read our [Contribution Guide (InnerSource & Outsource)](./CONTRIBUTING.en.md) for PR workflows, guardrails, and Copilot code review.
 
 ---
 

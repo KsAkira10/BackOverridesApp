@@ -22,7 +22,8 @@
 
 </div>
 
-> 📖 **Documentação Online Interativa:** Acesse o portal completo com simulador de rotas ao vivo no GitHub Pages: **[https://ksakira10.github.io/BackOverridesApp/](https://ksakira10.github.io/BackOverridesApp/)**
+> 📖 **Documentação Online Interativa:** Acesse o portal completo com simulador de rotas ao vivo no GitHub Pages: **[https://ksakira10.github.io/BackOverridesApp/](https://ksakira10.github.io/BackOverridesApp/)**  
+> 🤝 **Contribuindo:** Leia nosso [Guia de Contribuição (InnerSource & Outsource)](./CONTRIBUTING.md) com instruções para Pull Requests, guardrails e code review.
 
 ---
 

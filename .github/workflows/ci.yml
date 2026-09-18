@@ -7,8 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  commit-lint:
-    name: Validate Conventional Commits
+  pr-guardrails:
+    name: PR Guardrails & Security
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -17,7 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check Commit Messages
+      - name: Validate Conventional Commits
         run: |
           echo "Verificando mensagens de commits no Pull Request..."
           COMMITS=$(git log origin/${{ github.base_ref }}..HEAD --format="%s")
@@ -40,6 +40,45 @@ jobs:
               process.exit(1);
             }
           ' "$COMMITS"
+
+      - name: Security & Sanitization Guardrails
+        run: |
+          echo "Executando guardrails de sanitização de segurança..."
+          node -e '
+            const { execSync } = require("child_process");
+            const baseRef = process.env.BASE_REF || "origin/main";
+            let diff = "";
+            try {
+              diff = execSync(`git diff ${baseRef}...HEAD`, { encoding: "utf8" });
+            } catch (e) {
+              diff = "";
+            }
+
+            const forbiddenPatterns = [
+              /fe-portal-dev/i,
+              /bff-ecossistema-tech/i,
+              /redecorp/i,
+              /ghp_[a-zA-Z0-9]{36}/,
+              /npm_[a-zA-Z0-9]{36}/,
+              /-----BEGIN (RSA|EC|OPENSSH|PRIVATE) KEY-----/
+            ];
+
+            let foundViolations = 0;
+            for (const pattern of forbiddenPatterns) {
+              if (pattern.test(diff)) {
+                console.error("🚨 VIOLAÇÃO DE SEGURANÇA DETECTADA:", pattern);
+                foundViolations++;
+              }
+            }
+
+            if (foundViolations > 0) {
+              console.error("\nGuardrail bloqueado: Foram identificadas credenciais, chaves privadas ou domínios corporativos privados no diff do Pull Request.");
+              process.exit(1);
+            }
+            console.log("✅ Guardrail de sanitização aprovado: nenhum dado sensível encontrado.");
+          '
+        env:
+          BASE_REF: origin/${{ github.base_ref }}
 
   test:
     name: Test & Build (Node ${{ matrix.node-version }})
