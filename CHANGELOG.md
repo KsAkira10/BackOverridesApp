@@ -2,6 +2,13 @@
 
 Todas as mudanças notáveis no projeto **BackOverrides** são documentadas neste arquivo de acordo com as diretrizes do [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [v0.4.1] - 2026-09-18
+
+### 🐛 Bug Fixes
+
+- **docs**: fix repository link in github pages (#5) ([b320748](https://github.com/KsAkira10/BackOverridesApp/commit/b32074810a433cfbe2deafb04151d593bd3c1502))
+
+
 ## [v0.4.0] - 2026-09-18
 
 ### ✨ Features

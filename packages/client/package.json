@@ -1,6 +1,6 @@
 {
   "name": "@back-overrides/client",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "In-browser runtime and Service Worker interceptor for BackOverrides",
   "type": "module",
   "main": "./dist/index.cjs",
