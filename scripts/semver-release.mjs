@@ -134,6 +134,16 @@ export function getNextRcTag(targetVersion, existingTags = []) {
 }
 
 /**
+ * Find all Release Candidate tags for a specific target version
+ * e.g. targetVersion "0.2.0" -> ["v0.2.0-rc.1", "v0.2.0-rc.2"]
+ */
+export function getRcTagsForVersion(targetVersion, existingTags = []) {
+  const cleanVersion = targetVersion.replace(/^v/, '');
+  const prefix = `v${cleanVersion}-rc.`;
+  return existingTags.filter((t) => t.startsWith(prefix));
+}
+
+/**
  * Filter tags to find the latest stable SemVer tag (e.g. v0.1.0, not -rc)
  */
 export function getLatestStableTag(tags = []) {
@@ -425,11 +435,37 @@ export async function main() {
     const notesFile = path.join(REPO_ROOT, 'RELEASE_NOTES.md');
     fs.writeFileSync(notesFile, changelogSection, 'utf8');
 
+    const rcTags = getRcTagsForVersion(targetVersion, allTags);
+    console.log(`[SEMVER-RELEASE] Release Candidates associados a v${targetVersion}: ${rcTags.length > 0 ? rcTags.join(' ') : 'nenhum'}`);
+
     setGithubOutput('should_release', 'true');
     setGithubOutput('tag_name', finalTag);
     setGithubOutput('version', targetVersion);
+    setGithubOutput('rc_tags', rcTags.join(' '));
     setGithubOutput('is_prerelease', 'false');
     setGithubOutput('release_notes_file', notesFile);
+    return;
+  }
+
+  if (mode === 'list-rc') {
+    const v = process.argv[3] || targetVersion;
+    const rcTags = getRcTagsForVersion(v, allTags);
+    console.log(rcTags.join(' '));
+    return;
+  }
+
+  if (mode === 'clean-rc') {
+    const v = process.argv[3] || targetVersion;
+    const rcTags = getRcTagsForVersion(v, allTags);
+    console.log(`[SEMVER-RELEASE] Tags RC para remoção (versão v${v}): ${rcTags.length > 0 ? rcTags.join(' ') : 'nenhuma'}`);
+    for (const tag of rcTags) {
+      try {
+        console.log(`[SEMVER-RELEASE] Deletando tag remota: ${tag}`);
+        execSync(`git push origin --delete ${tag}`, { stdio: 'inherit' });
+      } catch (e) {
+        console.warn(`[SEMVER-RELEASE] Aviso ao deletar tag ${tag}:`, e.message);
+      }
+    }
     return;
   }
 

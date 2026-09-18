@@ -152,6 +152,25 @@ jobs:
           npm publish --workspace=@back-overrides/client --access public
           npm publish --workspace=@back-overrides/cli --access public
 
+      - name: Clean up Obsolete Release Candidate (RC) Tags & Pre-Releases
+        if: steps.semver.outputs.should_release == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RC_TAGS: ${{ steps.semver.outputs.rc_tags }}
+        run: |
+          echo "=== Limpeza de Release Candidates Obsoletos ==="
+          if [ -n "$RC_TAGS" ]; then
+            echo "Tags RC detectadas para remoção: ${RC_TAGS}"
+            for tag in $RC_TAGS; do
+              echo "==> Deletando GitHub Pre-Release e Tag remota: $tag"
+              gh release delete "$tag" --cleanup-tag --yes || true
+              git push origin --delete "$tag" || true
+            done
+            echo "✅ Release Candidates da versão ${{ steps.semver.outputs.tag_name }} removidos com sucesso!"
+          else
+            echo "Nenhuma tag RC anterior encontrada para remoção."
+          fi
+
       - name: Notice Direct Commit Skipped
         if: steps.semver.outputs.should_release != 'true'
         run: |
