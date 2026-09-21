@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BackOverrides Studio | Gerador de Content Script & Configurações</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="app-header">
+    <div class="brand-section">
+      <span class="brand-icon">⚡</span>
+      <div>
+        <h1 class="brand-title">BackOverrides Studio</h1>
+        <div class="brand-subtitle">Gerador de Content Script & Gestão de Interceptação</div>
+      </div>
+    </div>
+
+    <!-- CLI Status Pill -->
+    <div class="cli-status-pill" id="cli-status-pill">
+      <span class="status-dot" id="cli-status-dot"></span>
+      <span id="cli-status-text">CLI: Verificando status...</span>
+    </div>
+
+    <!-- Header Action Toolbar -->
+    <div class="header-actions">
+      <button class="btn-action btn-sync-cli" id="btn-sync-cli" title="Puxar regras atualizadas do CLI local">
+        🔄 Sincronizar CLI
+      </button>
+      <button class="btn-action btn-reload-tab" id="btn-reload-tab" title="Recarregar a página web aberta no navegador com cache limpo">
+        🔄 Recarregar Aba
+      </button>
+      <button class="btn-action btn-reload-ext" id="btn-reload-ext" title="Recarregar a extensão por completo (chrome.runtime.reload)">
+        ⚡ Recarregar Extensão
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Grid Layout -->
+  <main class="main-layout">
+    <!-- Left Column: Rules Management -->
+    <section class="panel">
+      <!-- Add Rule Card -->
+      <div class="panel-card">
+        <div class="panel-title-bar">
+          <div class="panel-title">
+            <span>➕</span> Configurar Nova Regra
+          </div>
+          <div class="presets-bar">
+            <span class="preset-chip" data-preset="oauth">Preset OAuth2</span>
+            <span class="preset-chip" data-preset="logout">Preset Logout</span>
+            <span class="preset-chip" data-preset="mfe">Preset Microfrontend</span>
+          </div>
+        </div>
+
+        <form id="rule-form">
+          <div class="form-group">
+            <label class="form-label" for="rule-source">URL de Origem (Endpoint Remoto / Padrão a Interceptar)</label>
+            <input type="text" id="rule-source" class="form-input" placeholder="https://api.corporate-cloud.io/bff/core/v1/oauth2/" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rule-target">URL de Destino (Localhost / Proxy BackOverrides)</label>
+            <input type="text" id="rule-target" class="form-input" placeholder="http://localhost:8888/bff/core/v1/oauth2/" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Métodos HTTP Permitidos</label>
+            <div class="methods-selector" id="methods-selector">
+              <button type="button" class="method-btn selected" data-method="*">TODOS (*)</button>
+              <button type="button" class="method-btn" data-method="GET">GET</button>
+              <button type="button" class="method-btn" data-method="POST">POST</button>
+              <button type="button" class="method-btn" data-method="PUT">PUT</button>
+              <button type="button" class="method-btn" data-method="DELETE">DELETE</button>
+              <button type="button" class="method-btn" data-method="PATCH">PATCH</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rule-desc">Descrição / Finalidade (Opcional)</label>
+            <input type="text" id="rule-desc" class="form-input" placeholder="Ex: Redireciona autenticação OAuth para BFF local">
+          </div>
+
+          <div class="form-row-actions">
+            <button type="submit" class="btn-primary" id="btn-submit-rule">
+              <span>➕</span> Adicionar Regra
+            </button>
+            <button type="button" class="btn-secondary" id="btn-reset-form">
+              Limpar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Configured Rules List Card -->
+      <div class="panel-card">
+        <div class="panel-title-bar">
+          <div class="panel-title">
+            <span>📋</span> Regras Cadastradas
+            <span class="count-badge" id="rules-count-badge">0</span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px;" id="btn-import-cli">
+              📥 Importar CLI
+            </button>
+            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; color: #f43f5e;" id="btn-clear-all-rules">
+              🗑️ Limpar
+            </button>
+          </div>
+        </div>
+
+        <div class="rules-container" id="rules-list-container">
+          <div class="empty-rules">
+            Nenhuma regra adicionada ainda.<br>Preencha o formulário acima ou importe do CLI.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Content Script Generator -->
+    <section class="panel">
+      <div class="panel-card">
+        <div class="panel-title-bar">
+          <div class="panel-title">
+            <span>⚙️</span> Opções do Gerador de Content Script
+          </div>
+        </div>
+
+        <div class="generator-options">
+          <div class="form-group" style="margin-bottom: 8px;">
+            <label class="form-label" for="opt-cli-url">URL Base do CLI Proxy</label>
+            <input type="text" id="opt-cli-url" class="form-input" value="http://localhost:8888">
+          </div>
+
+          <div class="option-toggle">
+            <div class="switch-label">
+              <span>Embutir regras como fallback inicial</span>
+              <span class="switch-subtext">Gera <code>rules = [...]</code> no código para agir antes da 1ª resposta do CLI</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="opt-embed-rules" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="option-toggle">
+            <div class="switch-label">
+              <span>Polling dinâmico via CLI</span>
+              <span class="switch-subtext">Consulta <code>/__back-overrides/rules</code> a cada 5s para auto-atualizar</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="opt-auto-polling" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="option-toggle">
+            <div class="switch-label">
+              <span>Logs detalhados no Console</span>
+              <span class="switch-subtext">Imprime reescrita de fetch e XHR com estilo visual no console da página</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="opt-debug-logs" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="option-toggle">
+            <div class="switch-label">
+              <span>Preservar cabeçalho Authorization</span>
+              <span class="switch-subtext">Mantém tokens Bearer intactos evitando o stripping nativo do browser</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="opt-preserve-auth" checked disabled>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Code Viewer Card -->
+        <div class="code-viewer-card">
+          <div class="code-toolbar">
+            <div class="code-title">
+              <span>📄</span> content-script.js
+            </div>
+            <div class="code-actions">
+              <button class="btn-code-action" id="btn-copy-code" title="Copiar código para a área de transferência">
+                📋 Copiar
+              </button>
+              <button class="btn-code-action" id="btn-download-code" title="Baixar arquivo content-script.js">
+                💾 Baixar
+              </button>
+              <button class="btn-code-action success" id="btn-save-storage" title="Salvar regras nas preferências da extensão">
+                🚀 Salvar na Extensão
+              </button>
+            </div>
+          </div>
+          <pre class="code-display" id="code-output">// Gerando código...</pre>
+        </div>
+
+        <!-- Dev Guide Box -->
+        <div class="guide-box">
+          <strong>💡 Como aplicar e testar o novo content-script.js:</strong>
+          <ol class="guide-steps">
+            <li>Clique em <strong>"💾 Baixar"</strong> ou <strong>"📋 Copiar"</strong> e salve o conteúdo em <code>packages/extension/content-script.js</code>.</li>
+            <li>Clique no botão <strong>"⚡ Recarregar Extensão"</strong> no cabeçalho acima para atualizar a extensão instantaneamente.</li>
+            <li>Clique em <strong>"🔄 Recarregar Aba"</strong> para recarregar a sua aplicação com o script já ativo no <code>document_start</code>!</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Floating Toast Notifications -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="options.js"></script>
+</body>
+</html>

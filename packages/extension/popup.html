@@ -127,6 +127,7 @@
       background: #10b981;
       border-radius: 50%;
       box-shadow: 0 0 6px #10b981;
+    }
     .port-badge {
       display: flex;
       align-items: center;
@@ -139,6 +140,54 @@
     .badge-dot.offline {
       background: #f87171;
       box-shadow: 0 0 6px #f87171;
+    }
+    .btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .btn-secondary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      width: 100%;
+      padding: 8px;
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-secondary:hover {
+      background: #334155;
+      color: #ffffff;
+      border-color: #38bdf8;
+    }
+    .btn-outline {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      width: 100%;
+      padding: 8px;
+      background: transparent;
+      color: #38bdf8;
+      border: 1px solid #0284c7;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all .2s;
+    }
+    .btn-outline:hover {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: #38bdf8;
     }
   </style>
 </head>
@@ -174,6 +223,20 @@
   <button class="btn" id="btn-sync">
     🔄 Sincronizar com CLI
   </button>
+
+  <div class="btn-group">
+    <button class="btn-secondary" id="btn-reload-ext" title="Recarrega a extensão por completo">
+      ⚡ Recarregar Extensão
+    </button>
+    <button class="btn-secondary" id="btn-reload-tab" title="Recarrega a aba ativa do navegador">
+      🔄 Recarregar Aba
+    </button>
+  </div>
+
+  <button class="btn-outline" id="btn-open-options">
+    ⚙️ Studio & Gerador de Content Script
+  </button>
+
   <div class="status" id="status-msg"></div>
 
   <script src="popup.js"></script>

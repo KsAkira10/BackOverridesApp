@@ -28,6 +28,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     showStatus(toggle.checked ? 'Overrides ativados!' : 'Overrides desativados.', 'success');
   });
 
+  const btnReloadExt = document.getElementById('btn-reload-ext');
+  const btnReloadTab = document.getElementById('btn-reload-tab');
+  const btnOpenOptions = document.getElementById('btn-open-options');
+
+  btnReloadExt?.addEventListener('click', () => {
+    showStatus('⚡ Recarregando extensão...', 'success');
+    chrome.runtime.sendMessage({ type: 'RELOAD_EXTENSION' }, () => {
+      if (chrome.runtime.reload) chrome.runtime.reload();
+    });
+  });
+
+  btnReloadTab?.addEventListener('click', () => {
+    showStatus('🔄 Recarregando aba...', 'success');
+    chrome.runtime.sendMessage({ type: 'RELOAD_ACTIVE_TAB' }, (res) => {
+      if (res && res.success) {
+        showStatus('Aba recarregada!', 'success');
+      } else {
+        chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
+          if (tabs && tabs[0] && tabs[0].id) {
+            chrome.tabs.reload(tabs[0].id, { bypassCache: true }, () => {
+              showStatus('Aba recarregada!', 'success');
+            });
+          }
+        });
+      }
+    });
+  });
+
+  btnOpenOptions?.addEventListener('click', () => {
+    if (chrome.runtime.openOptionsPage) {
+      chrome.runtime.openOptionsPage();
+    } else {
+      window.open(chrome.runtime.getURL('options.html'));
+    }
+  });
+
   btnSync.addEventListener('click', () => {
     showStatus('Buscando proxy BackOverrides...', '');
     chrome.runtime.sendMessage({ type: 'SYNC_FROM_CLI' }, (response) => {

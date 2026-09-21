@@ -33,7 +33,7 @@ Esta extensão intercepta requisições de rede diretamente na camada de rede do
 
 ---
 
-## 🔄 Sincronização com o CLI
+## 🔄 Sincronização com o CLI & Studio
 
 1. Inicie o BackOverrides CLI normalmente:
    ```bash
@@ -42,6 +42,18 @@ Esta extensão intercepta requisições de rede diretamente na camada de rede do
 2. A extensão sincroniza automaticamente com o CLI (`http://localhost:8888`) ao carregar.
 3. Se você alterar regras no arquivo JSON, abra o popup da extensão e clique em:
    **"🔄 Sincronizar com CLI (localhost:8888)"**.
+
+---
+
+## ⚡ BackOverrides Studio & Gerador de `content-script.js`
+
+A extensão conta com uma tela completa de configuração e gerador de código:
+- **Acesso:** Clique com o botão direito no ícone da extensão e selecione **Opções**, ou clique em **"⚙️ Studio & Gerador de Content Script"** no popup da extensão.
+- **Configuração de Regras:** Adicione regras individuais (origem, destino, métodos HTTP permitidos e descrição) ou importe regras ativas do CLI com um clique.
+- **Gerador de `content-script.js`:** Gera dinamicamente o código do script com opções de fallback estático, polling automático e logs detalhados de rede no Console.
+- **Reload Facilitado:**
+  - **⚡ Recarregar Extensão:** Executa `chrome.runtime.reload()` instantaneamente, recarregando `content-script.js`, service worker e regras sem precisar ir em `chrome://extensions`.
+  - **🔄 Recarregar Aba:** Recarrega a aba ativa do navegador (com bypass de cache) para injetar o script atualizado no `document_start`.
 
 ---
 

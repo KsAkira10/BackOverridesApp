@@ -103,6 +103,11 @@
     return originalOpen.call(this, method, url, ...rest);
   };
 
+  window.addEventListener('back-overrides-refresh-rules', () => {
+    console.log('%c⚡ [BackOverrides Extension]%c Forcing rules refresh from in-page trigger...', 'color: #00d2ff; font-weight: bold;', 'color: inherit;');
+    refreshRules();
+  });
+
   refreshRules();
   setInterval(refreshRules, 5000);
 })();
