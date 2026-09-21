@@ -2,6 +2,13 @@
 
 Todas as mudanças notáveis no projeto **BackOverrides** são documentadas neste arquivo de acordo com as diretrizes do [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [v0.6.0] - 2026-09-21
+
+### ✨ Features
+
+- add Model Context Protocol (MCP) server package for AI assistant integration (#7) ([0ead6c8](https://github.com/KsAkira10/BackOverridesApp/commit/0ead6c8e221628c4fcede2915d930ec17ee87273))
+
+
 ## [v0.5.0] - 2026-09-21
 
 ### ✨ Features
