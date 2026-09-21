@@ -13,12 +13,12 @@
 
 <br />
 
-[![Latest Release](https://img.shields.io/github/v/release/KsAkira10/BackOverridesApp?include_prereleases=false&label=release&color=10b981&logo=github)](https://github.com/KsAkira10/BackOverridesApp/releases/latest)
-[![Release Candidate](https://img.shields.io/github/v/release/KsAkira10/BackOverridesApp?include_prereleases=true&label=rc&color=f59e0b&logo=github)](https://github.com/KsAkira10/BackOverridesApp/releases)
-[![@back-overrides/cli](https://img.shields.io/npm/v/@back-overrides/cli?label=%40back-overrides%2Fcli&color=0284c7&logo=npm)](https://www.npmjs.com/package/@back-overrides/cli)
-[![@back-overrides/core](https://img.shields.io/npm/v/@back-overrides/core?label=%40back-overrides%2Fcore&color=0284c7&logo=npm)](https://www.npmjs.com/package/@back-overrides/core)
-[![@back-overrides/client](https://img.shields.io/npm/v/@back-overrides/client?label=%40back-overrides%2Fclient&color=0284c7&logo=npm)](https://www.npmjs.com/package/@back-overrides/client)
-[![@back-overrides/mcp](https://img.shields.io/npm/v/@back-overrides/mcp?label=%40back-overrides%2Fmcp&color=8b5cf6&logo=npm)](https://www.npmjs.com/package/@back-overrides/mcp)
+[![Latest Release](https://img.shields.io/github/v/release/KsAkira10/BackOverridesApp?label=release&color=10b981&logo=github)](https://github.com/KsAkira10/BackOverridesApp/releases/latest)
+[![Release Candidate](https://img.shields.io/github/v/tag/KsAkira10/BackOverridesApp?include_prereleases&label=rc&color=f59e0b&logo=github)](https://github.com/KsAkira10/BackOverridesApp/releases)
+[![@back-overrides/cli](https://img.shields.io/github/package-json/v/KsAkira10/BackOverridesApp?filename=packages%2Fcli%2Fpackage.json&label=%40back-overrides%2Fcli&color=0284c7&logo=npm)](https://github.com/KsAkira10/BackOverridesApp/tree/main/packages/cli)
+[![@back-overrides/core](https://img.shields.io/github/package-json/v/KsAkira10/BackOverridesApp?filename=packages%2Fcore%2Fpackage.json&label=%40back-overrides%2Fcore&color=0284c7&logo=npm)](https://github.com/KsAkira10/BackOverridesApp/tree/main/packages/core)
+[![@back-overrides/client](https://img.shields.io/github/package-json/v/KsAkira10/BackOverridesApp?filename=packages%2Fclient%2Fpackage.json&label=%40back-overrides%2Fclient&color=0284c7&logo=npm)](https://github.com/KsAkira10/BackOverridesApp/tree/main/packages/client)
+[![@back-overrides/mcp](https://img.shields.io/github/package-json/v/KsAkira10/BackOverridesApp?filename=packages%2Fmcp%2Fpackage.json&label=%40back-overrides%2Fmcp&color=8b5cf6&logo=npm)](https://github.com/KsAkira10/BackOverridesApp/tree/main/packages/mcp)
 [![MCP Protocol](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-8b5cf6?logo=anthropic&logoColor=white)](https://modelcontextprotocol.io)
 [![Chrome Extension](https://img.shields.io/badge/extension-Chrome%20%2F%20Edge-a855f7?logo=googlechrome&logoColor=white)](https://github.com/KsAkira10/BackOverridesApp/releases/latest)
 

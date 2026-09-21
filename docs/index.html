@@ -29,7 +29,8 @@
       <a href="#modes" class="nav-link" data-i18n="nav_modes">3 Modos</a>
       <a href="#examples" class="nav-link" data-i18n="nav_examples">Exemplos Reais</a>
       <a href="#playground" class="nav-link" data-i18n="nav_playground">Simulador Live</a>
-      <a href="#extension" class="nav-link" data-i18n="nav_extension">Extensão Chrome</a>
+      <a href="#extension" class="nav-link" data-i18n="nav_extension">Extensão & Studio</a>
+      <a href="#mcp" class="nav-link" data-i18n="nav_mcp">Servidor MCP (IA)</a>
     </div>
 
     <!-- Actions (Language, GitHub, Mobile Menu Toggle) -->
@@ -118,7 +119,9 @@
       <ul class="drawer-menu">
         <li><a href="#playground" class="drawer-link" data-i18n="sidebar_playground">Simulador Interativo Live</a></li>
         <li><a href="#config-reference" class="drawer-link" data-i18n="sidebar_config_ref">Configuração JSON</a></li>
-        <li><a href="#extension" class="drawer-link" data-i18n="sidebar_extension">Extensão do Chrome</a></li>
+        <li><a href="#extension" class="drawer-link" data-i18n="sidebar_extension">Extensão & Studio</a></li>
+        <li><a href="#mcp" class="drawer-link" data-i18n="sidebar_mcp">Servidor MCP & IA</a></li>
+        <li><a href="#port-discovery" class="drawer-link" data-i18n="sidebar_port_discovery">Detecção Automática de Portas</a></li>
       </ul>
 
       <div class="drawer-footer">
@@ -160,7 +163,9 @@
       <ul class="sidebar-menu">
         <li class="sidebar-item"><a href="#playground" data-i18n="sidebar_playground">Simulador Interativo Live</a></li>
         <li class="sidebar-item"><a href="#config-reference" data-i18n="sidebar_config_ref">Configuração JSON</a></li>
-        <li class="sidebar-item"><a href="#extension" data-i18n="sidebar_extension">Extensão do Chrome</a></li>
+        <li class="sidebar-item"><a href="#extension" data-i18n="sidebar_extension">Extensão & Studio</a></li>
+        <li class="sidebar-item"><a href="#mcp" data-i18n="sidebar_mcp">Servidor MCP & IA</a></li>
+        <li class="sidebar-item"><a href="#port-discovery" data-i18n="sidebar_port_discovery">Detecção Automática de Portas</a></li>
       </ul>
     </aside>
 
@@ -621,12 +626,12 @@ console.log('Pedido processado com sucesso:', data.orderId);</code></pre>
         </div>
       </section>
 
-      <!-- Extension Guide -->
+      <!-- Extension & Studio Guide -->
       <section class="section" id="extension">
         <div class="section-header">
-          <span class="section-tag" data-i18n="ext_tag">Zero Código</span>
-          <h2 class="section-title" data-i18n="ext_title">Extensão para Google Chrome & Edge</h2>
-          <p class="section-desc" data-i18n="ext_desc">Instale uma vez e intercepte endpoints corporativos sem modificar repositórios de código.</p>
+          <span class="section-tag" data-i18n="ext_tag">Zero Código & Studio</span>
+          <h2 class="section-title" data-i18n="ext_title">Extensão para Google Chrome & Edge + BackOverrides Studio</h2>
+          <p class="section-desc" data-i18n="ext_desc">Interceptação na camada de rede, gerador visual de content-script e reload facilitado da extensão sem abrir configurações do navegador.</p>
         </div>
 
         <div class="cards-grid">
@@ -651,6 +656,323 @@ console.log('Pedido processado com sucesso:', data.orderId);</code></pre>
             <h3 data-i18n="ext_c3_title">Suporte a main_frame</h3>
             <p data-i18n-html="ext_c3_desc">
               Intercepta não apenas <code>fetch</code> e <code>XHR</code>, mas também navegações completas do navegador como o fluxo de login corporativo OAuth/SSO.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-icon icon-cyan">4</div>
+            <h3 data-i18n="ext_c4_title">BackOverrides Studio</h3>
+            <p data-i18n-html="ext_c4_desc">
+              Tela visual completa de gestão de regras (<code>options.html</code>) acessível pelo popup ou clicando com botão direito no ícone da extensão -> <strong>Opções</strong>.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-icon icon-amber">5</div>
+            <h3 data-i18n="ext_c5_title">Preservação de Authorization</h3>
+            <p data-i18n-html="ext_c5_desc">
+              O <code>content-script.js</code> executa no <code>world: MAIN</code> e reescreve chamadas antes de saírem do browser, impedindo a perda de tokens Bearer em redirecionamentos cross-origin.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-icon icon-emerald">6</div>
+            <h3 data-i18n="ext_c6_title">Reload Instantâneo (1 Clique)</h3>
+            <p data-i18n-html="ext_c6_desc">
+              Botões de <strong>⚡ Recarregar Extensão</strong> (invoca <code>chrome.runtime.reload()</code>) e <strong>🔄 Recarregar Aba</strong> no popup e no Studio para agilizar seu ciclo de testes.
+            </p>
+          </div>
+        </div>
+
+        <!-- Practical Example: Content Script Generation & In-Page Interception -->
+        <div style="margin-top: 32px;">
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 12px;" data-i18n="ext_example_title">
+            Exemplo Prático: Código Gerado do <code>content-script.js</code>
+          </h3>
+          <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;" data-i18n-html="ext_example_desc">
+            O gerador do Studio cria um interceptor pronto para rodar no contexto da sua aplicação web com fallback estático, polling dinâmico a cada 5s e logs no Console do DevTools:
+          </p>
+
+          <div class="code-box">
+            <div class="code-header">
+              <span>packages/extension/content-script.js</span>
+              <button class="code-copy-btn" data-i18n="copy_text">Copiar</button>
+            </div>
+            <pre><code>// BackOverrides In-Page Network Interceptor (Manifest V3 - World: MAIN)
+// Executa no document_start, reescrevendo fetch/XHR antes do envio ao motor de rede:
+(function () {
+  let cliUrl = 'http://localhost:8888';
+  let rules = [
+    {
+      source: 'https://api.corporate-cloud.io/bff/core/v1/oauth2/',
+      target: 'http://localhost:8888/bff/core/v1/oauth2/',
+    },
+    {
+      source: 'https://api.corporate-cloud.io/bff/core/v1/logout',
+      target: 'http://localhost:8888/bff/core/v1/logout',
+    }
+  ];
+
+  // Intercepta window.fetch preservando tokens de Authorization
+  const originalFetch = window.fetch;
+  window.fetch = function (input, init) {
+    let url = typeof input === 'string' ? input : (input instanceof Request ? input.url : input.toString());
+    for (const rule of rules) {
+      if (url.startsWith(rule.source)) {
+        const rewritten = url.replace(rule.source, rule.target);
+        console.log(`%c⚡ [BackOverrides]%c Rewriting: ${url} -> ${rewritten}`, 'color: #00d2ff; font-weight: bold;', 'color: inherit;');
+        return input instanceof Request ? originalFetch(new Request(rewritten, input), init) : originalFetch(rewritten, init);
+      }
+    }
+    return originalFetch(input, init);
+  };
+
+  // Suporte a recarga dinâmica sem refresh:
+  window.addEventListener('back-overrides-refresh-rules', () => refreshRules());
+})();</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- MCP Section -->
+      <section class="section" id="mcp">
+        <div class="section-header">
+          <span class="section-tag" data-i18n="mcp_tag">🤖 Inteligência Artificial</span>
+          <h2 class="section-title" data-i18n="mcp_title">Model Context Protocol (MCP) Server</h2>
+          <p class="section-desc" data-i18n="mcp_desc">
+            Conecte agentes e assistentes como GitHub Copilot Chat no VS Code, Claude Desktop, Cursor e Antigravity diretamente ao BackOverrides para diagnóstico em tempo real.
+          </p>
+        </div>
+
+        <!-- MCP Setup Tabs -->
+        <div class="tabs-container" style="margin-bottom: 28px;">
+          <div class="tabs-nav">
+            <button class="tab-btn active" data-tab="tab-mcp-vscode">VS Code (.vscode/mcp.json)</button>
+            <button class="tab-btn" data-tab="tab-mcp-claude">Claude Desktop</button>
+            <button class="tab-btn" data-tab="tab-mcp-cli">Configuração Automática (CLI)</button>
+          </div>
+
+          <div class="tab-content active" id="tab-mcp-vscode">
+            <div class="code-box">
+              <div class="code-header">
+                <span>.vscode/mcp.json</span>
+                <button class="code-copy-btn" data-i18n="copy_text">Copiar</button>
+              </div>
+              <pre><code>{
+  "mcpServers": {
+    "back-overrides": {
+      "command": "node",
+      "args": ["packages/mcp/dist/index.js"]
+    }
+  }
+}</code></pre>
+            </div>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-top: 10px;" data-i18n-html="mcp_vscode_tip">
+              Após salvar o arquivo, abra o <strong>GitHub Copilot Chat</strong> no VS Code e seu assistente terá acesso imediato a todas as ferramentas do BackOverrides.
+            </p>
+          </div>
+
+          <div class="tab-content" id="tab-mcp-claude">
+            <div class="code-box">
+              <div class="code-header">
+                <span>claude_desktop_config.json</span>
+                <button class="code-copy-btn" data-i18n="copy_text">Copiar</button>
+              </div>
+              <pre><code>{
+  "mcpServers": {
+    "back-overrides": {
+      "command": "npx",
+      "args": ["-y", "@back-overrides/mcp"]
+    }
+  }
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="tab-content" id="tab-mcp-cli">
+            <div class="code-box">
+              <div class="code-header">
+                <span>Terminal</span>
+                <button class="code-copy-btn" data-i18n="copy_text">Copiar</button>
+              </div>
+              <pre><code># Gera automaticamente o arquivo .vscode/mcp.json no seu repositório:
+back-overrides mcp configure
+
+# Inicia o servidor MCP manualmente em modo stdio:
+back-overrides mcp</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- MCP Tools Grid -->
+        <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;" data-i18n="mcp_tools_title">
+          Ferramentas (Tools) Expostas para Assistentes LLM
+        </h3>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;" data-i18n="mcp_tools_desc">
+          Seu assistente de IA pode invocar autonomamente qualquer uma das ferramentas abaixo para inspecionar, testar e configurar o proxy:
+        </p>
+
+        <div class="mcp-tools-grid">
+          <div class="mcp-tool-card">
+            <div class="mcp-tool-header">
+              <span class="mcp-tool-name">back_overrides_status</span>
+              <span class="mcp-tool-badge">Diagnóstico</span>
+            </div>
+            <p class="mcp-tool-desc" data-i18n="mcp_tool_status_desc">
+              Verifica se o proxy está online, porta ativa (ex: 8888 ou 8889), PID, uptime e total de regras interceptadas.
+            </p>
+          </div>
+
+          <div class="mcp-tool-card">
+            <div class="mcp-tool-header">
+              <span class="mcp-tool-name">back_overrides_list_rules</span>
+              <span class="mcp-tool-badge">Inspeção</span>
+            </div>
+            <p class="mcp-tool-desc" data-i18n="mcp_tool_rules_desc">
+              Retorna a lista completa de rotas configuradas, métodos permitidos e o alvo resolvido no localhost.
+            </p>
+          </div>
+
+          <div class="mcp-tool-card">
+            <div class="mcp-tool-header">
+              <span class="mcp-tool-name">back_overrides_add_rule</span>
+              <span class="mcp-tool-badge">Modificação</span>
+            </div>
+            <p class="mcp-tool-desc" data-i18n="mcp_tool_add_desc">
+              Adiciona uma nova regra ao <code>back-overrides.json</code> programaticamente sem necessidade de edição manual.
+            </p>
+          </div>
+
+          <div class="mcp-tool-card">
+            <div class="mcp-tool-header">
+              <span class="mcp-tool-name">back_overrides_toggle_rule</span>
+              <span class="mcp-tool-badge">Controle</span>
+            </div>
+            <p class="mcp-tool-desc" data-i18n="mcp_tool_toggle_desc">
+              Ativa ou desativa temporariamente uma regra por índice ou rota para comparar chamadas com e sem interceptação.
+            </p>
+          </div>
+
+          <div class="mcp-tool-card">
+            <div class="mcp-tool-header">
+              <span class="mcp-tool-name">back_overrides_test_route</span>
+              <span class="mcp-tool-badge">Simulação</span>
+            </div>
+            <p class="mcp-tool-desc" data-i18n="mcp_tool_test_desc">
+              Simula como uma requisição (URL + método HTTP) será tratada: match de regra, resolução do destino local e headers CORS.
+            </p>
+          </div>
+
+          <div class="mcp-tool-card">
+            <div class="mcp-tool-header">
+              <span class="mcp-tool-name">back_overrides_open_browser</span>
+              <span class="mcp-tool-badge">Automação</span>
+            </div>
+            <p class="mcp-tool-desc" data-i18n="mcp_tool_browser_desc">
+              Lança uma instância do Chrome, Edge ou Brave com a extensão do BackOverrides automaticamente carregada.
+            </p>
+          </div>
+
+          <div class="mcp-tool-card">
+            <div class="mcp-tool-header">
+              <span class="mcp-tool-name">back_overrides_get_snippets</span>
+              <span class="mcp-tool-badge">Geração</span>
+            </div>
+            <p class="mcp-tool-desc" data-i18n="mcp_tool_snippets_desc">
+              Gera snippets rápidos para injeção via DevTools console, tag <code>&lt;script&gt;</code> no HTML ou import npm.
+            </p>
+          </div>
+
+          <div class="mcp-tool-card">
+            <div class="mcp-tool-header">
+              <span class="mcp-tool-name">back_overrides_configure_vscode</span>
+              <span class="mcp-tool-badge">Setup</span>
+            </div>
+            <p class="mcp-tool-desc" data-i18n="mcp_tool_cfg_desc">
+              Configura automaticamente o arquivo <code>.vscode/mcp.json</code> no workspace atual.
+            </p>
+          </div>
+        </div>
+
+        <!-- Simulated AI Chat Example -->
+        <h3 style="font-size: 18px; font-weight: 700; margin-top: 32px; margin-bottom: 8px;" data-i18n="mcp_chat_title">
+          Exemplo Prático: Diálogo com GitHub Copilot no VS Code
+        </h3>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 16px;" data-i18n="mcp_chat_desc">
+          Veja como o assistente utiliza o MCP para diagnosticar e corrigir um problema de rota em segundos:
+        </p>
+
+        <div class="chat-demo-card">
+          <div class="chat-demo-header">
+            <span>💬 VS Code — GitHub Copilot Chat (MCP Enabled)</span>
+            <span style="color: #10b981;">● Active MCP Server: back-overrides</span>
+          </div>
+          <div class="chat-demo-body">
+            <!-- User Message -->
+            <div class="chat-msg user">
+              <div class="chat-avatar user-avatar">👤</div>
+              <div class="chat-bubble" data-i18n-html="mcp_chat_msg1">
+                Copilot, a rota <code>/bff/core/v1/oauth2/authorize</code> ainda está caindo na nuvem em vez do meu BFF local na porta 8080. Você pode verificar e corrigir?
+              </div>
+            </div>
+
+            <!-- AI Response -->
+            <div class="chat-msg ai">
+              <div class="chat-avatar ai-avatar">🤖</div>
+              <div class="chat-bubble">
+                <div class="tool-invocation">
+                  <span>⚡</span> <code>back_overrides_status()</code> ➔ Proxy online na porta 8888 (PID 1420)
+                </div>
+                <div class="tool-invocation">
+                  <span>⚡</span> <code>back_overrides_test_route({ url: ".../authorize", method: "GET" })</code> ➔ <strong>PASSTHROUGH_REMOTE</strong>
+                </div>
+                <div data-i18n-html="mcp_chat_msg2">
+                  Identifiquei o problema: não havia uma regra cadastrada para <code>/bff/core/v1/oauth2/authorize</code>, por isso a requisição continuava indo para a nuvem. Vou criar a regra para você agora:
+                </div>
+                <div class="tool-invocation">
+                  <span>⚡</span> <code>back_overrides_add_rule({ path: "/bff/core/v1/oauth2/*", methods: ["*"] })</code> ➔ <strong>Regra adicionada com sucesso!</strong>
+                </div>
+                <div data-i18n-html="mcp_chat_msg3">
+                  Pronto! Testei novamente e a rota agora retorna <strong>OVERRIDE_LOCAL</strong> direcionando para <code>http://localhost:8080/bff/core/v1/oauth2/authorize</code> com cabeçalhos CORS automáticos.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Port Discovery Section -->
+      <section class="section" id="port-discovery">
+        <div class="section-header">
+          <span class="section-tag" data-i18n="port_tag">Alta Disponibilidade</span>
+          <h2 class="section-title" data-i18n="port_title">Resolução Dinâmica de Portas & Runtime</h2>
+          <p class="section-desc" data-i18n="port_desc">
+            Conflitos de portas ocupadas são resolvidos automaticamente. Se a porta 8888 estiver em uso, o proxy sobe na próxima livre e sincroniza os clientes.
+          </p>
+        </div>
+
+        <div class="cards-grid">
+          <div class="feature-card">
+            <div class="card-icon icon-emerald">🔄</div>
+            <h3 data-i18n="port_c1_title">Auto-Switch Inteligente</h3>
+            <p data-i18n-html="port_c1_desc">
+              Se a porta <code>8888</code> estiver ocupada por outro processo ou instância, o BackOverrides varre portas subsequentes (<code>8889</code>, <code>8890</code>...) até encontrar uma livre.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-icon icon-blue">📄</div>
+            <h3 data-i18n="port_c2_title">Arquivo de Runtime State</h3>
+            <p data-i18n-html="port_c2_desc">
+              O proxy grava o arquivo <code>.back-overrides-runtime.json</code> na raiz do projeto com o PID e a porta exata ativa, permitindo descoberta imediata.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-icon icon-purple">⚡</div>
+            <h3 data-i18n="port_c3_title">Auto-Discovery nos Clientes</h3>
+            <p data-i18n-html="port_c3_desc">
+              O pacote <code>@back-overrides/client</code> e a Extensão do Chrome escaneiam a faixa de portas e se conectam automaticamente à porta ativa sem reconfiguração.
             </p>
           </div>
         </div>

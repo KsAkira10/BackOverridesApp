@@ -3,7 +3,7 @@
 > 🌐 **Model Context Protocol (MCP) Server for BackOverridesApp**  
 > Conecte agentes de Inteligência Artificial (**GitHub Copilot**, **Claude Desktop**, **Cursor**, **Windsurf**, **Antigravity**) diretamente ao BackOverrides.
 
-[![Latest Release](https://img.shields.io/github/v/release/KsAkira10/BackOverridesApp?include_prereleases=false&label=release&color=10b981&logo=github)](https://github.com/KsAkira10/BackOverridesApp/releases/latest)
+[![Latest Release](https://img.shields.io/github/v/release/KsAkira10/BackOverridesApp?label=release&color=10b981&logo=github)](https://github.com/KsAkira10/BackOverridesApp/releases/latest)
 [![MCP Protocol](https://img.shields.io/badge/MCP-2024--11--05-8b5cf6?logo=anthropic&logoColor=white)](https://modelcontextprotocol.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
