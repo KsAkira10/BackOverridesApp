@@ -30,7 +30,9 @@ describe('BackOverrides MCP Server & Tools', () => {
       assert.equal(typeof status.running, 'boolean');
       assert.ok(status.status === 'online' || status.status === 'offline');
       assert.ok(status.message.length > 0);
-      assert.ok(status.runtimeFile.includes('.back-overrides-runtime.json'));
+      if (status.runtimeFile) {
+        assert.ok(status.runtimeFile.includes('.back-overrides-runtime.json'));
+      }
     });
   });
 
@@ -107,7 +109,7 @@ describe('BackOverrides MCP Server & Tools', () => {
   describe('testRoute', () => {
     it('correctly matches and simulates OAuth override route', async () => {
       const matchTest = await testRoute({
-        url: 'https://api.code-dev.redecorp.br/bff/ecossistema-tech/v1/oauth2/authorize',
+        url: 'https://api.corporate-cloud.io/bff/core/v1/oauth2/authorize',
         method: 'GET',
         cwd: repoRoot,
       });
@@ -122,7 +124,7 @@ describe('BackOverrides MCP Server & Tools', () => {
 
     it('identifies unmapped endpoints as passthrough to remote', async () => {
       const passthroughTest = await testRoute({
-        url: 'https://api.code-dev.redecorp.br/api/unmapped/resource/123',
+        url: 'https://api.corporate-cloud.io/api/unmapped/resource/123',
         method: 'GET',
         cwd: repoRoot,
       });

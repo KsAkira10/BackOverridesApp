@@ -8,12 +8,12 @@
   let cliUrl = 'http://localhost:8888';
   let rules = [
     {
-      source: 'https://api.code-dev.redecorp.br/bff/ecossistema-tech/v1/oauth2/',
-      target: 'http://localhost:8888/bff/ecossistema-tech/v1/oauth2/',
+      source: 'https://api.corporate-cloud.io/bff/core/v1/oauth2/',
+      target: 'http://localhost:8888/bff/core/v1/oauth2/',
     },
     {
-      source: 'https://api.code-dev.redecorp.br/bff/ecossistema-tech/v1/logout',
-      target: 'http://localhost:8888/bff/ecossistema-tech/v1/logout',
+      source: 'https://api.corporate-cloud.io/bff/core/v1/logout',
+      target: 'http://localhost:8888/bff/core/v1/logout',
     },
   ];
 

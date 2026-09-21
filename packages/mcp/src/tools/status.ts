@@ -113,6 +113,7 @@ export async function getBackOverridesStatus(cwd?: string): Promise<BackOverride
       rulesCount: Array.isArray(rulesPing.data?.overrides) ? rulesPing.data.overrides.length : undefined,
       rulesEndpoint: 'http://localhost:8888/__back-overrides/rules',
       statusEndpoint: 'http://localhost:8888/__back-overrides/status',
+      runtimeFile: paths.runtimePath,
       message: 'BackOverrides proxy detected on port 8888 (running without runtime state file).',
     };
   }
