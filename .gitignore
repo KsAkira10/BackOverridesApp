@@ -22,7 +22,8 @@ yarn-error.log*
 Thumbs.db
 
 # IDE & Editor
-.vscode/
+.vscode/*
+!.vscode/mcp.json
 .idea/
 *.swp
 *.swo

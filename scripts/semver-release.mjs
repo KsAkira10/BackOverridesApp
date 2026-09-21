@@ -309,6 +309,7 @@ export function updatePackageVersions(newVersion) {
     path.join(REPO_ROOT, 'packages/core/package.json'),
     path.join(REPO_ROOT, 'packages/client/package.json'),
     path.join(REPO_ROOT, 'packages/cli/package.json'),
+    path.join(REPO_ROOT, 'packages/mcp/package.json'),
     path.join(REPO_ROOT, 'packages/extension/manifest.json'),
   ];
 

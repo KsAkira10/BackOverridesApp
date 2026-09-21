@@ -18,6 +18,8 @@
 [![@back-overrides/cli](https://img.shields.io/npm/v/@back-overrides/cli?label=%40back-overrides%2Fcli&color=0284c7&logo=npm)](https://www.npmjs.com/package/@back-overrides/cli)
 [![@back-overrides/core](https://img.shields.io/npm/v/@back-overrides/core?label=%40back-overrides%2Fcore&color=0284c7&logo=npm)](https://www.npmjs.com/package/@back-overrides/core)
 [![@back-overrides/client](https://img.shields.io/npm/v/@back-overrides/client?label=%40back-overrides%2Fclient&color=0284c7&logo=npm)](https://www.npmjs.com/package/@back-overrides/client)
+[![@back-overrides/mcp](https://img.shields.io/npm/v/@back-overrides/mcp?label=%40back-overrides%2Fmcp&color=8b5cf6&logo=npm)](https://www.npmjs.com/package/@back-overrides/mcp)
+[![MCP Protocol](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-8b5cf6?logo=anthropic&logoColor=white)](https://modelcontextprotocol.io)
 [![Chrome Extension](https://img.shields.io/badge/extension-Chrome%20%2F%20Edge-a855f7?logo=googlechrome&logoColor=white)](https://github.com/KsAkira10/BackOverridesApp/releases/latest)
 
 </div>
@@ -248,7 +250,40 @@ node packages/cli/dist/cli.js snippet -p 8888
 node packages/cli/dist/cli.js list -c back-overrides.json
 ```
 
+### 4. Servidor MCP para Agentes de IA (GitHub Copilot, Claude, Cursor)
+```bash
+# Inicia o servidor MCP via stdio
+node packages/cli/dist/cli.js mcp
+# ou
+npm run mcp
+```
+
 ---
+
+## 🤖 Conexão com Agentes de IA (Model Context Protocol - MCP)
+
+O **BackOverrides** implementa nativamente o padrão [Model Context Protocol (MCP)](https://modelcontextprotocol.io), permitindo que assistentes inteligentes como **GitHub Copilot Chat no VS Code**, **Claude Desktop**, **Cursor** e **Antigravity** acessem, controlem e testem o ecossistema do BackOverrides.
+
+### 🌟 O que a IA consegue fazer com o BackOverrides MCP ativo:
+- 🔄 **Iniciar e parar o proxy** sob demanda (`back_overrides_start`, `back_overrides_stop`, `back_overrides_status`).
+- ✍️ **Consultar e adicionar regras de override** dinamicamente no `back-overrides.json` (`back_overrides_list_rules`, `back_overrides_add_rule`, `back_overrides_toggle_rule`).
+- 🚀 **Abrir o navegador com a extensão já carregada** via flag `--load-extension` para testes imediatos (`back_overrides_launch_browser`).
+- 🧪 **Simular correspondência de rotas e cabeçalhos CORS** antes de rodar o código (`back_overrides_test_route`).
+- 📋 **Gerar snippets de injeção** para DevTools Console ou index.html (`back_overrides_get_snippets`).
+
+### ⚙️ Configuração Automática no VS Code (GitHub Copilot):
+O projeto já conta com o arquivo `.vscode/mcp.json` pré-configurado:
+```json
+{
+  "mcpServers": {
+    "back-overrides": {
+      "command": "node",
+      "args": ["packages/mcp/dist/index.js"]
+    }
+  }
+}
+```
+No VS Code com a extensão do GitHub Copilot Chat instalada, as ferramentas e recursos ficam disponíveis automaticamente. Para mais detalhes e configurações para Claude Desktop e Cursor, consulte a documentação do [@back-overrides/mcp](./packages/mcp/README.md).
 
 ## 🧪 Demonstração Prática Automatizada
 

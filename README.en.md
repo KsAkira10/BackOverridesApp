@@ -18,6 +18,8 @@
 [![@back-overrides/cli](https://img.shields.io/npm/v/@back-overrides/cli?label=%40back-overrides%2Fcli&color=0284c7&logo=npm)](https://www.npmjs.com/package/@back-overrides/cli)
 [![@back-overrides/core](https://img.shields.io/npm/v/@back-overrides/core?label=%40back-overrides%2Fcore&color=0284c7&logo=npm)](https://www.npmjs.com/package/@back-overrides/core)
 [![@back-overrides/client](https://img.shields.io/npm/v/@back-overrides/client?label=%40back-overrides%2Fclient&color=0284c7&logo=npm)](https://www.npmjs.com/package/@back-overrides/client)
+[![@back-overrides/mcp](https://img.shields.io/npm/v/@back-overrides/mcp?label=%40back-overrides%2Fmcp&color=8b5cf6&logo=npm)](https://www.npmjs.com/package/@back-overrides/mcp)
+[![MCP Protocol](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-8b5cf6?logo=anthropic&logoColor=white)](https://modelcontextprotocol.io)
 [![Chrome Extension](https://img.shields.io/badge/extension-Chrome%20%2F%20Edge-a855f7?logo=googlechrome&logoColor=white)](https://github.com/KsAkira10/BackOverridesApp/releases/latest)
 
 </div>
@@ -250,7 +252,40 @@ node packages/cli/dist/cli.js snippet -p 8888
 node packages/cli/dist/cli.js list -c back-overrides.json
 ```
 
+### 4. MCP Server for AI Agents (GitHub Copilot, Claude, Cursor)
+```bash
+# Start MCP server over stdio
+node packages/cli/dist/cli.js mcp
+# or
+npm run mcp
+```
+
 ---
+
+## 🤖 Connect with AI Agents (Model Context Protocol - MCP)
+
+**BackOverrides** natively implements the [Model Context Protocol (MCP)](https://modelcontextprotocol.io) open standard, enabling intelligent assistants like **GitHub Copilot Chat in VS Code**, **Claude Desktop**, **Cursor**, and **Antigravity** to interact with, manage, and test BackOverrides.
+
+### 🌟 What AI agents can do with BackOverrides MCP:
+- 🔄 **Lifecycle management:** Start, stop, and verify proxy health (`back_overrides_start`, `back_overrides_stop`, `back_overrides_status`).
+- ✍️ **Rules manipulation:** Inspect and add/toggle endpoint override rules in `back-overrides.json` (`back_overrides_list_rules`, `back_overrides_add_rule`, `back_overrides_toggle_rule`).
+- 🚀 **Launch browser with preloaded extension:** Open Chrome/Brave/Edge with `--load-extension` for instant zero-config testing (`back_overrides_launch_browser`).
+- 🧪 **Simulate route matching & CORS:** Test how any URL/method is routed and what CORS headers are applied before making requests (`back_overrides_test_route`).
+- 📋 **Generate frontend snippets:** Obtain ready-to-use DevTools console one-liners or script tags (`back_overrides_get_snippets`).
+
+### ⚙️ Automated VS Code Setup (GitHub Copilot):
+The repository includes `.vscode/mcp.json` preconfigured:
+```json
+{
+  "mcpServers": {
+    "back-overrides": {
+      "command": "node",
+      "args": ["packages/mcp/dist/index.js"]
+    }
+  }
+}
+```
+For more details and instructions for Claude Desktop and Cursor, check out [@back-overrides/mcp documentation](./packages/mcp/README.md).
 
 ## 🧪 Automated Demos
 
