@@ -2,6 +2,13 @@
 
 Todas as mudanças notáveis no projeto **BackOverrides** são documentadas neste arquivo de acordo com as diretrizes do [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [v0.7.0] - 2026-09-21
+
+### ✨ Features
+
+- **extension**: add options studio page, content-script generator and reload controls (#8) ([2b2cf0e](https://github.com/KsAkira10/BackOverridesApp/commit/2b2cf0e2cc41ce5b18024ac3c123976f4a783af0))
+
+
 ## [v0.6.0] - 2026-09-21
 
 ### ✨ Features
