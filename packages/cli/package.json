@@ -1,6 +1,6 @@
 {
   "name": "@back-overrides/cli",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "CLI reverse proxy for selective endpoint overriding with automated CORS handling",
   "type": "module",
   "bin": {

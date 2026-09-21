@@ -2,6 +2,17 @@
 
 Todas as mudanças notáveis no projeto **BackOverrides** são documentadas neste arquivo de acordo com as diretrizes do [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [v0.5.0] - 2026-09-21
+
+### ✨ Features
+
+- add mobile navigation drawer and update backend override configuration (#6) ([39bbd26](https://github.com/KsAkira10/BackOverridesApp/commit/39bbd267f74205674ad363c823f4f159e598e867))
+
+### 🧰 Maintenance & Other Changes
+
+- *(chore)* update backend override configurations, add agent guidelines, and update gitignore ([0f991f4](https://github.com/KsAkira10/BackOverridesApp/commit/0f991f47a0553a47b6b86834e7d188bfbc9c16f0))
+
+
 ## [v0.4.1] - 2026-09-18
 
 ### 🐛 Bug Fixes
