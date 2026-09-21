@@ -291,4 +291,48 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     })();
     return true;
   }
+
+  if (request.type === 'RELOAD_EXTENSION') {
+    sendResponse({ success: true, message: 'Extensão recarregando...' });
+    setTimeout(() => {
+      chrome.runtime.reload();
+    }, 150);
+    return true;
+  }
+
+  if (request.type === 'RELOAD_ACTIVE_TAB') {
+    chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
+      const target = tabs && tabs[0] ? tabs[0] : null;
+      if (target && target.id) {
+        chrome.tabs.reload(target.id, { bypassCache: true }, () => {
+          sendResponse({ success: true, tabId: target.id, url: target.url });
+        });
+      } else {
+        chrome.tabs.query({ active: true }, (anyTabs) => {
+          if (anyTabs && anyTabs[0] && anyTabs[0].id) {
+            chrome.tabs.reload(anyTabs[0].id, { bypassCache: true }, () => {
+              sendResponse({ success: true, tabId: anyTabs[0].id });
+            });
+          } else {
+            sendResponse({ success: false, error: 'Nenhuma aba ativa encontrada.' });
+          }
+        });
+      }
+    });
+    return true;
+  }
+
+  if (request.type === 'RELOAD_BOTH') {
+    chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
+      const activeTabId = tabs && tabs[0] ? tabs[0].id : null;
+      if (activeTabId) {
+        chrome.tabs.reload(activeTabId, { bypassCache: true });
+      }
+      sendResponse({ success: true, tabReloaded: !!activeTabId });
+      setTimeout(() => {
+        chrome.runtime.reload();
+      }, 150);
+    });
+    return true;
+  }
 });

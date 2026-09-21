@@ -33,7 +33,7 @@ This extension intercepts network traffic directly at the browser network layer 
 
 ---
 
-## 🔄 Synchronization with the CLI
+## 🔄 Synchronization with the CLI & Studio
 
 1. Start the BackOverrides CLI proxy:
    ```bash
@@ -42,6 +42,18 @@ This extension intercepts network traffic directly at the browser network layer 
 2. The extension automatically syncs with the CLI (`http://localhost:8888`) upon startup.
 3. If you edit rules in your JSON file, open the extension popup and click:
    **"🔄 Sincronizar com CLI (localhost:8888)"** (or use the automatic refresh).
+
+---
+
+## ⚡ BackOverrides Studio & `content-script.js` Generator
+
+The extension provides a full-featured management and code generation studio:
+- **Access:** Right-click the extension icon and select **Options**, or click **"⚙️ Studio & Gerador de Content Script"** in the popup.
+- **Rule Management:** Add custom rules (source, target, allowed HTTP methods, description) or import active rules from the CLI with a single click.
+- **`content-script.js` Generator:** Dynamically generates ready-to-use in-page interceptor scripts with options for static fallbacks, polling, and styled DevTools console logs.
+- **Instant Reload Actions:**
+  - **⚡ Reload Extension:** Triggers `chrome.runtime.reload()` immediately, updating `content-script.js`, background worker, and declarative rules without opening `chrome://extensions`.
+  - **🔄 Reload Active Tab:** Refreshes the active web page with cache bypass so the updated content script executes right at `document_start`.
 
 ---
 
