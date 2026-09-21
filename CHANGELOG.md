@@ -2,6 +2,13 @@
 
 Todas as mudanças notáveis no projeto **BackOverrides** são documentadas neste arquivo de acordo com as diretrizes do [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [v0.7.1] - 2026-09-21
+
+### 🧰 Maintenance & Other Changes
+
+- *(docs)* fix broken release, rc, and monorepo package version badges (#9) ([a297fc1](https://github.com/KsAkira10/BackOverridesApp/commit/a297fc14372c11d5fd203fe65a4b2395de6730a5))
+
+
 ## [v0.7.0] - 2026-09-21
 
 ### ✨ Features
