@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { Command } from 'commander';
 import pc from 'picocolors';
 import YAML from 'yaml';
@@ -124,6 +125,41 @@ program
     console.log(pc.dim('   In your main.ts / index.ts:'));
     console.log(`   ${pc.yellow(`import { setupBackOverrides } from '@back-overrides/client';`)}`);
     console.log(`   ${pc.yellow(`setupBackOverrides({ cliUrl: 'http://localhost:${port}' });`)}\n`);
+  });
+
+program
+  .command('mcp')
+  .description('Start Model Context Protocol (MCP) server over stdio for AI agents (GitHub Copilot, Claude, Cursor)')
+  .action(async () => {
+    try {
+      // 1. Try resolving dynamically from @back-overrides/mcp package
+      const mcpPkg = '@back-overrides/mcp';
+      const mcpModule = await import(mcpPkg);
+      await mcpModule.runMcpServer();
+    } catch {
+      // 2. Fallback: resolve sibling packages/mcp/dist/index.js relative to cli dist
+      try {
+        const currentDir = path.dirname(fileURLToPath(import.meta.url));
+        const candidatePaths = [
+          path.resolve(currentDir, '../../mcp/dist/index.js'),
+          path.resolve(process.cwd(), 'packages/mcp/dist/index.js'),
+        ];
+        for (const cand of candidatePaths) {
+          if (fs.existsSync(cand)) {
+            const mcpModule = await import(cand);
+            await mcpModule.runMcpServer();
+            return;
+          }
+        }
+      } catch (innerErr: any) {
+        process.stderr.write(`Error launching MCP server: ${innerErr.message}\n`);
+        process.exit(1);
+      }
+      process.stderr.write(
+        'Error: @back-overrides/mcp is not built. Run "npm run build" to build the MCP server.\n'
+      );
+      process.exit(1);
+    }
   });
 
 program.parse(process.argv);

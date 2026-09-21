@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "back-overrides": {
+      "command": "node",
+      "args": [
+        "packages/mcp/dist/index.js"
+      ]
+    }
+  }
+}

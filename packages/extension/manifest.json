@@ -17,5 +17,13 @@
   },
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["content-script.js"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    }
+  ]
 }

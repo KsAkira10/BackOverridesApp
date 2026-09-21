@@ -8,13 +8,14 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run --workspace=@back-overrides/core build && npm run --workspace=@back-overrides/client build && npm run --workspace=@back-overrides/cli build",
+    "build": "npm run --workspace=@back-overrides/core build && npm run --workspace=@back-overrides/client build && npm run --workspace=@back-overrides/cli build && npm run --workspace=@back-overrides/mcp build",
     "pretest": "npm run build",
-    "test": "npm run --workspace=@back-overrides/core test && npm run --workspace=@back-overrides/client test && npm run --workspace=@back-overrides/cli test && npm run test:semver",
+    "test": "npm run --workspace=@back-overrides/core test && npm run --workspace=@back-overrides/client test && npm run --workspace=@back-overrides/cli test && npm run --workspace=@back-overrides/mcp test && npm run test:semver",
     "test:semver": "node --test test/semver-release.test.mjs",
     "release:check": "node scripts/semver-release.mjs check",
     "release:changelog": "node scripts/semver-release.mjs changelog",
-    "start": "npm run --workspace=@back-overrides/cli start",
+    "start": "node ./packages/cli/dist/cli.js -c back-overrides.json",
+    "mcp": "node ./packages/mcp/dist/index.js",
     "demo": "bash examples/run-demo.sh",
     "demo:single-spa": "bash examples/single-spa-demo/run-single-spa-demo.sh",
     "clean": "rm -rf packages/*/dist packages/*/node_modules node_modules"

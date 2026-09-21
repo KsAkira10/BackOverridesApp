@@ -14,6 +14,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Check live status on popup open
   chrome.runtime.sendMessage({ type: 'GET_CLI_STATUS' }, (res) => {
+    if (chrome.runtime.lastError) {
+      // Worker acordando ou sem listener no momento
+      return;
+    }
     if (res) {
       updatePortDisplay(res.cliUrl, res.online);
     }
@@ -27,6 +31,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   btnSync.addEventListener('click', () => {
     showStatus('Buscando proxy BackOverrides...', '');
     chrome.runtime.sendMessage({ type: 'SYNC_FROM_CLI' }, (response) => {
+      if (chrome.runtime.lastError) {
+        updatePortDisplay(data.cliUrl || 'http://localhost:8888', false);
+        showStatus(`Erro: ${chrome.runtime.lastError.message}`, 'error');
+        return;
+      }
       if (response && response.success) {
         updatePortDisplay(response.cliUrl, true);
         showStatus(`Sincronizado na porta ${response.port}! (${response.count} regras)`, 'success');

@@ -12,78 +12,99 @@ const DEFAULT_CONFIG = {
   ],
 };
 
+let isSyncing = false;
+let pendingSync = false;
+
 async function syncDynamicRules() {
-  const data = await chrome.storage.local.get(['enabled', 'rules', 'cliUrl']);
-  const isEnabled = data.enabled !== undefined ? data.enabled : DEFAULT_CONFIG.enabled;
-  const rules = data.rules || DEFAULT_CONFIG.rules;
-
-  // Clear existing dynamic rules
-  const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
-  const existingRuleIds = existingRules.map((r) => r.id);
-
-  if (!isEnabled || rules.length === 0) {
-    await chrome.declarativeNetRequest.updateDynamicRules({
-      removeRuleIds: existingRuleIds,
-      addRules: [],
-    });
-    console.log('[BackOverrides Extension] Rules disabled.');
+  if (isSyncing) {
+    pendingSync = true;
     return;
   }
+  isSyncing = true;
 
-  const newRules = [];
-  let ruleIdCounter = 1;
+  try {
+    const data = await chrome.storage.local.get(['enabled', 'rules', 'cliUrl']);
+    const isEnabled = data.enabled !== undefined ? data.enabled : DEFAULT_CONFIG.enabled;
+    const rules = data.rules || DEFAULT_CONFIG.rules;
 
-  for (const rule of rules) {
-    const redirectRuleId = ruleIdCounter++;
-    const corsRuleId = ruleIdCounter++;
+    // Clear existing dynamic rules
+    const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
+    const existingRuleIds = existingRules.map((r) => r.id);
 
-    // 1. Redirect Rule - Supports both async calls (xmlhttprequest) and full-page navigations (main_frame)
-    newRules.push({
-      id: redirectRuleId,
-      priority: 1,
-      action: {
-        type: 'redirect',
-        redirect: {
-          regexSubstitution: rule.targetPattern,
-        },
-      },
-      condition: {
-        regexFilter: rule.sourceRegex,
-        resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'other'],
-        requestMethods: rule.methods && rule.methods.length > 0 ? rule.methods.map((m) => m.toLowerCase()) : undefined,
-      },
-    });
+    if (!isEnabled || rules.length === 0) {
+      if (existingRuleIds.length > 0) {
+        await chrome.declarativeNetRequest.updateDynamicRules({
+          removeRuleIds: existingRuleIds,
+          addRules: [],
+        });
+      }
+      console.log('[BackOverrides Extension] Rules disabled.');
+      return;
+    }
 
-    // 2. CORS Response Header Modification
-    newRules.push({
-      id: corsRuleId,
-      priority: 1,
-      action: {
-        type: 'modifyHeaders',
-        responseHeaders: [
-          { header: 'access-control-allow-origin', operation: 'set', value: '*' },
-          { header: 'access-control-allow-credentials', operation: 'set', value: 'true' },
-          {
-            header: 'access-control-allow-methods',
-            operation: 'set',
-            value: 'GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD',
+    const newRules = [];
+    let ruleIdCounter = 1;
+
+    for (const rule of rules) {
+      const redirectRuleId = ruleIdCounter++;
+      const corsRuleId = ruleIdCounter++;
+
+      // 1. Redirect Rule - Supports both async calls (xmlhttprequest) and full-page navigations (main_frame)
+      newRules.push({
+        id: redirectRuleId,
+        priority: 1,
+        action: {
+          type: 'redirect',
+          redirect: {
+            regexSubstitution: rule.targetPattern,
           },
-          { header: 'access-control-allow-headers', operation: 'set', value: '*' },
-        ],
-      },
-      condition: {
-        regexFilter: rule.sourceRegex,
-        resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'other'],
-      },
+        },
+        condition: {
+          regexFilter: rule.sourceRegex,
+          resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'other'],
+          requestMethods: rule.methods && rule.methods.length > 0 ? rule.methods.map((m) => m.toLowerCase()) : undefined,
+        },
+      });
+
+      // 2. CORS Response Header Modification
+      newRules.push({
+        id: corsRuleId,
+        priority: 1,
+        action: {
+          type: 'modifyHeaders',
+          responseHeaders: [
+            { header: 'access-control-allow-origin', operation: 'set', value: '*' },
+            { header: 'access-control-allow-credentials', operation: 'set', value: 'true' },
+            {
+              header: 'access-control-allow-methods',
+              operation: 'set',
+              value: 'GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD',
+            },
+            { header: 'access-control-allow-headers', operation: 'set', value: '*' },
+          ],
+        },
+        condition: {
+          regexFilter: rule.sourceRegex,
+          resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'other'],
+        },
+      });
+    }
+
+    await chrome.declarativeNetRequest.updateDynamicRules({
+      removeRuleIds: existingRuleIds,
+      addRules: newRules,
     });
+
+    console.log(`[BackOverrides Extension] Applied ${newRules.length} dynamic redirect & CORS rules (including main_frame).`);
+  } catch (err) {
+    console.error('[BackOverrides Extension] Erro ao sincronizar regras dinâmicas:', err);
+  } finally {
+    isSyncing = false;
+    if (pendingSync) {
+      pendingSync = false;
+      syncDynamicRules();
+    }
   }
-
-  await chrome.declarativeNetRequest.updateDynamicRules({
-    removeRuleIds: existingRuleIds,
-    addRules: newRules,
-  });
-
-  console.log(`[BackOverrides Extension] Applied ${newRules.length} dynamic redirect & CORS rules (including main_frame).`);
 }
 
 async function discoverCliUrl(startPort = 8888, range = 20) {
@@ -193,19 +214,24 @@ async function autoSyncFromCli(preferredCliUrl) {
 
     if (convertedRules.length > 0 || config) {
       await chrome.storage.local.set({ rules: convertedRules, cliUrl });
-      await syncDynamicRules();
       console.log(`[BackOverrides Extension] Auto-synced ${convertedRules.length} rule(s) from CLI at ${cliUrl}.`);
     }
-  } catch {
+  } catch (err) {
     // CLI is offline or unreachable, keep existing stored rules
+    console.warn('[BackOverrides Extension] Auto-sync skipped (CLI unreachable):', err.message);
   }
 }
 
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.set(DEFAULT_CONFIG, () => {
-    syncDynamicRules();
-    autoSyncFromCli();
-  });
+chrome.runtime.onInstalled.addListener(async () => {
+  try {
+    const data = await chrome.storage.local.get(['rules']);
+    if (!data.rules) {
+      await chrome.storage.local.set(DEFAULT_CONFIG);
+    }
+    await autoSyncFromCli();
+  } catch (err) {
+    console.error('[BackOverrides Extension] Error onInstalled:', err);
+  }
 });
 
 chrome.runtime.onStartup?.addListener(() => {

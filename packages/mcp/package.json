@@ -1,0 +1,29 @@
+{
+  "name": "@back-overrides/mcp",
+  "version": "0.4.1",
+  "description": "Model Context Protocol (MCP) server for BackOverridesApp to empower AI agents (GitHub Copilot, Claude, Cursor, Antigravity)",
+  "type": "module",
+  "bin": {
+    "back-overrides-mcp": "./dist/index.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "start": "node ./dist/index.js",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@back-overrides/cli": "*",
+    "@back-overrides/core": "*",
+    "@modelcontextprotocol/sdk": "^1.6.0",
+    "picocolors": "^1.0.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.14.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
