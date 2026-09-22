@@ -116,6 +116,78 @@
           </div>
         </div>
       </div>
+
+      <!-- CLI Launch Guide Card -->
+      <div class="panel-card" id="cli-launch-panel-card">
+        <div class="panel-title-bar">
+          <div class="panel-title">
+            <span>🚀</span> Inicialização & Comandos do CLI
+          </div>
+          <div class="cli-status-indicator" id="studio-cli-indicator">
+            <span class="status-dot" id="studio-status-dot"></span>
+            <span id="studio-status-label">Verificando...</span>
+          </div>
+        </div>
+
+        <div class="cli-launch-body">
+          <p class="section-desc" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+            O proxy BackOverrides intercepta requisições de rede e gerencia CORS automaticamente. Escolha o seu gerenciador de pacotes para copiar o comando de inicialização pronto para rodar no terminal do seu projeto:
+          </p>
+
+          <div class="cmd-selector-bar" id="studio-cmd-selector">
+            <button type="button" class="studio-cmd-btn active" data-cmd="npx">npx</button>
+            <button type="button" class="studio-cmd-btn" data-cmd="npm">npm start</button>
+            <button type="button" class="studio-cmd-btn" data-cmd="pnpm">pnpm dlx</button>
+            <button type="button" class="studio-cmd-btn" data-cmd="bun">bunx</button>
+            <button type="button" class="studio-cmd-btn" data-cmd="custom">Personalizado</button>
+          </div>
+
+          <!-- Custom Command Input -->
+          <div class="form-group custom-cmd-group hidden" id="custom-cmd-wrapper">
+            <label class="form-label" for="custom-cli-input">Comando Personalizado de Execução</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="custom-cli-input" class="form-input" placeholder="node packages/cli/dist/cli.js -c back-overrides.json -p 8888">
+              <button type="button" class="btn-secondary" id="btn-save-custom-cmd" style="white-space: nowrap; padding: 0 14px;">Salvar</button>
+            </div>
+          </div>
+
+          <!-- Command Terminal Box -->
+          <div class="studio-cmd-box">
+            <div class="terminal-prefix">$</div>
+            <code class="studio-cmd-code" id="studio-cmd-display">npx @back-overrides/cli</code>
+            <button type="button" class="btn-copy-studio-cmd" id="btn-copy-studio-cmd" title="Copiar comando">
+              📋 Copiar
+            </button>
+          </div>
+
+          <!-- Quick Flags Table / Accordion -->
+          <details class="studio-flags-details" open>
+            <summary class="studio-flags-summary">💡 Flags & Opções Úteis do CLI</summary>
+            <div class="studio-flags-table">
+              <div class="flag-row">
+                <code>-p, --port &lt;porta&gt;</code>
+                <span>Define a porta do proxy local (padrão: <code>8888</code>). A extensão descobre portas automaticamente no range 8888–8908.</span>
+              </div>
+              <div class="flag-row">
+                <code>-c, --config &lt;arquivo&gt;</code>
+                <span>Caminho para o arquivo JSON de regras (padrão: <code>back-overrides.json</code>).</span>
+              </div>
+              <div class="flag-row">
+                <code>--remote &lt;url&gt;</code>
+                <span>Sobrescreve a URL base do backend remoto sem alterar o arquivo de regras.</span>
+              </div>
+              <div class="flag-row">
+                <code>-v, --verbose</code>
+                <span>Habilita logs detalhados de cada requisição interceptada e cabeçalhos CORS no terminal.</span>
+              </div>
+              <div class="flag-row">
+                <code>back-overrides list</code>
+                <span>Exibe todas as regras ativas configuradas sem iniciar o servidor proxy.</span>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
     </section>
 
     <!-- Right Column: Content Script Generator -->

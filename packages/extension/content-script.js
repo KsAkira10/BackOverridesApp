@@ -15,6 +15,10 @@
       source: 'https://api.corporate-cloud.io/bff/core/v1/logout',
       target: 'http://localhost:8888/bff/core/v1/logout',
     },
+    {
+      source: '/bff/core/v1/oauth2/',
+      target: 'http://localhost:8888/bff/core/v1/oauth2/',
+    },
   ];
 
   const originalFetch = window.fetch;
@@ -30,13 +34,26 @@
         const remote = (config.remote || '').replace(/\/+$/, '');
         const localCli = `http://localhost:${config.port || 8888}`;
         if (config.overrides && Array.isArray(config.overrides)) {
-          rules = config.overrides.map((o) => {
+          rules = [];
+          for (const o of config.overrides) {
             const cleanPath = (o.path || '').replace(/\*$/, '');
-            return {
-              source: `${remote}${cleanPath}`,
+            if (remote) {
+              rules.push({
+                source: `${remote}${cleanPath}`,
+                target: `${localCli}${cleanPath}`,
+              });
+            }
+            if (typeof window !== 'undefined' && window.location && window.location.origin) {
+              rules.push({
+                source: `${window.location.origin}${cleanPath}`,
+                target: `${localCli}${cleanPath}`,
+              });
+            }
+            rules.push({
+              source: cleanPath,
               target: `${localCli}${cleanPath}`,
-            };
-          });
+            });
+          }
         }
       }
     } catch {

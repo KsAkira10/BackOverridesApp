@@ -5,23 +5,128 @@ document.addEventListener('DOMContentLoaded', async () => {
   const statusMsg = document.getElementById('status-msg');
   const portDot = document.getElementById('port-dot');
   const portText = document.getElementById('port-text');
+  const offlineCard = document.getElementById('cli-offline-card');
+  const cmdPillsContainer = document.getElementById('cmd-pills');
+  const cmdCodeDisplay = document.getElementById('cmd-code-display');
+  const btnCopyCmd = document.getElementById('btn-copy-cmd');
+
+  const COMMAND_PRESETS = {
+    npx: 'npx @back-overrides/cli',
+    npm: 'npm start',
+    pnpm: 'pnpm dlx @back-overrides/cli',
+    bun: 'bunx @back-overrides/cli',
+  };
 
   // Load state
-  const data = await chrome.storage.local.get(['enabled', 'rules', 'cliUrl']);
+  const data = await chrome.storage.local.get([
+    'enabled',
+    'rules',
+    'cliUrl',
+    'cliCmdPreset',
+    'customCliCmd',
+  ]);
+
   toggle.checked = data.enabled !== undefined ? data.enabled : true;
   renderRules(data.rules || []);
   updatePortDisplay(data.cliUrl || 'http://localhost:8888', true);
 
-  // Check live status on popup open
-  chrome.runtime.sendMessage({ type: 'GET_CLI_STATUS' }, (res) => {
-    if (chrome.runtime.lastError) {
-      // Worker acordando ou sem listener no momento
-      return;
+  // Setup command preset & display
+  const activePreset = data.cliCmdPreset && COMMAND_PRESETS[data.cliCmdPreset] ? data.cliCmdPreset : 'npx';
+  if (cmdCodeDisplay) {
+    if (data.cliCmdPreset === 'custom' && data.customCliCmd) {
+      cmdCodeDisplay.textContent = data.customCliCmd;
+    } else {
+      cmdCodeDisplay.textContent = COMMAND_PRESETS[activePreset];
     }
-    if (res) {
-      updatePortDisplay(res.cliUrl, res.online);
+  }
+
+  if (cmdPillsContainer) {
+    cmdPillsContainer.querySelectorAll('.cmd-pill').forEach((btn) => {
+      if (btn.dataset.cmd === activePreset) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    cmdPillsContainer.addEventListener('click', async (e) => {
+      const btn = e.target.closest('.cmd-pill');
+      if (!btn) return;
+      const key = btn.dataset.cmd;
+      if (COMMAND_PRESETS[key]) {
+        cmdPillsContainer.querySelectorAll('.cmd-pill').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        cmdCodeDisplay.textContent = COMMAND_PRESETS[key];
+        await chrome.storage.local.set({ cliCmdPreset: key });
+      }
+    });
+  }
+
+  // Copy command to clipboard
+  btnCopyCmd?.addEventListener('click', async () => {
+    const cmd = cmdCodeDisplay ? cmdCodeDisplay.textContent.trim() : 'npx @back-overrides/cli';
+    try {
+      await navigator.clipboard.writeText(cmd);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = cmd;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
     }
+
+    btnCopyCmd.textContent = '✅ Copiado!';
+    btnCopyCmd.classList.add('copied');
+    showStatus('Comando copiado! Cole e execute no terminal.', 'success');
+
+    setTimeout(() => {
+      btnCopyCmd.textContent = '📋 Copiar';
+      btnCopyCmd.classList.remove('copied');
+    }, 2000);
   });
+
+  // Reative polling state
+  let lastOnlineState = null;
+
+  function checkLiveCli(isInitial = false) {
+    chrome.runtime.sendMessage({ type: 'GET_CLI_STATUS' }, (res) => {
+      if (chrome.runtime.lastError) {
+        return;
+      }
+      if (!res) return;
+
+      const isOnline = !!res.online;
+      updatePortDisplay(res.cliUrl, isOnline);
+
+      if (isOnline) {
+        offlineCard?.classList.add('hidden');
+
+        // Detected transition: offline -> online!
+        if (lastOnlineState === false) {
+          showStatus('🎉 CLI detectado! Sincronizando regras...', 'success');
+          chrome.runtime.sendMessage({ type: 'SYNC_FROM_CLI' }, (syncRes) => {
+            if (syncRes && syncRes.success) {
+              updatePortDisplay(syncRes.cliUrl, true);
+              showStatus(`🎉 Conectado na porta ${syncRes.port}! (${syncRes.count} regras)`, 'success');
+              chrome.storage.local.get(['rules'], (r) => {
+                renderRules(r.rules || []);
+              });
+            }
+          });
+        }
+      } else {
+        offlineCard?.classList.remove('hidden');
+      }
+
+      lastOnlineState = isOnline;
+    });
+  }
+
+  // Initial check & continuous 2s polling while popup is open
+  checkLiveCli(true);
+  const pollInterval = setInterval(() => checkLiveCli(false), 2000);
+  window.addEventListener('unload', () => clearInterval(pollInterval));
 
   toggle.addEventListener('change', async () => {
     await chrome.storage.local.set({ enabled: toggle.checked });
@@ -69,17 +174,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     chrome.runtime.sendMessage({ type: 'SYNC_FROM_CLI' }, (response) => {
       if (chrome.runtime.lastError) {
         updatePortDisplay(data.cliUrl || 'http://localhost:8888', false);
+        offlineCard?.classList.remove('hidden');
         showStatus(`Erro: ${chrome.runtime.lastError.message}`, 'error');
         return;
       }
       if (response && response.success) {
         updatePortDisplay(response.cliUrl, true);
+        offlineCard?.classList.add('hidden');
+        lastOnlineState = true;
         showStatus(`Sincronizado na porta ${response.port}! (${response.count} regras)`, 'success');
         chrome.storage.local.get(['rules'], (res) => {
           renderRules(res.rules || []);
         });
       } else {
         updatePortDisplay(data.cliUrl || 'http://localhost:8888', false);
+        offlineCard?.classList.remove('hidden');
+        lastOnlineState = false;
         showStatus(`Erro: ${response?.error || 'CLI offline'}`, 'error');
       }
     });
