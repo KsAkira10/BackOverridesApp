@@ -2,6 +2,13 @@
 
 Todas as mudanças notáveis no projeto **BackOverrides** são documentadas neste arquivo de acordo com as diretrizes do [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/) e [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [v0.8.0] - 2026-09-22
+
+### ✨ Features
+
+- add CLI quick launch assistant, auto-detection, and interactive popup mockup in docs (#10) ([9beca35](https://github.com/KsAkira10/BackOverridesApp/commit/9beca35c17284ef482d8bd72d92cc0f470bb6ace))
+
+
 ## [v0.7.1] - 2026-09-21
 
 ### 🧰 Maintenance & Other Changes

@@ -1,6 +1,6 @@
 {
   "name": "@back-overrides/mcp",
-  "version": "0.7.1",
+  "version": "0.8.0",
   "description": "Model Context Protocol (MCP) server for BackOverridesApp to empower AI agents (GitHub Copilot, Claude, Cursor, Antigravity)",
   "type": "module",
   "bin": {
