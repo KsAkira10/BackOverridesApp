@@ -682,6 +682,104 @@ console.log('Pedido processado com sucesso:', data.orderId);</code></pre>
               Botões de <strong>⚡ Recarregar Extensão</strong> (invoca <code>chrome.runtime.reload()</code>) e <strong>🔄 Recarregar Aba</strong> no popup e no Studio para agilizar seu ciclo de testes.
             </p>
           </div>
+
+          <div class="feature-card">
+            <div class="card-icon icon-amber">7</div>
+            <h3 data-i18n="ext_c7_title">Assistente de Inicialização do CLI</h3>
+            <p data-i18n-html="ext_c7_desc">
+              Quando o CLI estiver offline, o popup e o Studio exibem um card inteligente com comandos em 1 clique (<code>npx</code>, <code>npm start</code>, <code>pnpm dlx</code>, <code>bunx</code>) e dicas de flags úteis.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="card-icon icon-blue">8</div>
+            <h3 data-i18n="ext_c8_title">Auto-Detecção e Auto-Sincronização</h3>
+            <p data-i18n-html="ext_c8_desc">
+              Monitoramento em tempo real a cada 2 segundos no popup: ao rodar o comando no terminal, o status transiciona para verde e as regras ativas são sincronizadas automaticamente sem recarregar!
+            </p>
+          </div>
+        </div>
+
+        <!-- Interactive Preview: Quick Launch Assistant Widget -->
+        <div class="ext-preview-section" style="margin-top: 36px;">
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;" data-i18n="ext_widget_title">
+            ⚡ Prévia Interativa: Assistente de Inicialização no Popup
+          </h3>
+          <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;" data-i18n="ext_widget_desc">
+            Experimente abaixo como o popup da extensão se comporta quando o CLI está offline, permitindo copiar o comando em 1 clique e alternar entre diferentes gerenciadores:
+          </p>
+
+          <div class="popup-mockup-wrapper">
+            <div class="popup-mockup-card">
+              <!-- Popup Header -->
+              <div class="popup-mockup-header">
+                <div class="popup-mockup-brand">
+                  <span>⚡ BackOverrides</span>
+                </div>
+                <div class="popup-mockup-toggle">
+                  <span class="mockup-toggle-slider"></span>
+                </div>
+              </div>
+
+              <div class="popup-mockup-badge">
+                <span class="mockup-badge-dot"></span> Suporta <strong>main_frame</strong> (Navegações & OAuth)
+              </div>
+
+              <!-- Offline Helper Card inside Mockup -->
+              <div class="mockup-offline-card" id="demo-offline-card">
+                <div class="mockup-offline-header">
+                  <span>⚠️ CLI Offline</span>
+                </div>
+                <div class="mockup-offline-sub">Execute o comando abaixo no terminal do projeto:</div>
+
+                <div class="mockup-pills" id="demo-cmd-pills">
+                  <button type="button" class="mockup-pill active" data-cmd="npx">npx</button>
+                  <button type="button" class="mockup-pill" data-cmd="npm">npm start</button>
+                  <button type="button" class="mockup-pill" data-cmd="pnpm">pnpm dlx</button>
+                  <button type="button" class="mockup-pill" data-cmd="bun">bunx</button>
+                </div>
+
+                <div class="mockup-cmd-box">
+                  <code class="mockup-cmd-code" id="demo-cmd-code">npx @back-overrides/cli</code>
+                  <button type="button" class="mockup-copy-btn" id="demo-copy-btn" title="Copiar comando">📋 Copiar</button>
+                </div>
+
+                <div class="mockup-waiting">
+                  <span class="mockup-pulse-dot"></span>
+                  <span data-i18n="ext_demo_waiting">Aguardando inicialização no terminal...</span>
+                </div>
+
+                <details class="mockup-flags">
+                  <summary data-i18n="ext_demo_flags_title">💡 Dicas de flags úteis</summary>
+                  <div class="mockup-flags-content">
+                    <div><code>-p 8888</code> : Define porta customizada</div>
+                    <div><code>-c back-overrides.json</code> : Especifica arquivo de regras</div>
+                    <div><code>-v</code> : Modo detalhado (verbose logs)</div>
+                  </div>
+                </details>
+              </div>
+
+              <!-- Rules Card in Mockup -->
+              <div class="mockup-rules-card">
+                <div class="mockup-rules-title">Regras de Interceptação Ativas</div>
+                <div class="mockup-rules-content" id="demo-rules-content">
+                  <span style="color: #64748b;">CLI offline. Inicie o proxy para sincronizar.</span>
+                </div>
+              </div>
+
+              <!-- Status Badge & Controls -->
+              <div class="mockup-port-badge">
+                <span class="mockup-status-dot offline" id="demo-status-dot"></span>
+                <span id="demo-status-text">CLI: localhost:8888 (Offline)</span>
+              </div>
+
+              <div class="mockup-btn-actions">
+                <button type="button" class="mockup-btn-primary" id="demo-toggle-online" data-i18n="ext_demo_sim_online">
+                  🔄 Simular CLI Iniciado no Terminal
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Practical Example: Content Script Generation & In-Page Interception -->

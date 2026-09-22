@@ -33,15 +33,23 @@ This extension intercepts network traffic directly at the browser network layer 
 
 ---
 
-## 🔄 Synchronization with the CLI & Studio
+## 🔄 Synchronization with the CLI & Quick Launch Helper
 
-1. Start the BackOverrides CLI proxy:
+1. Start the BackOverrides CLI proxy in your project directory:
    ```bash
-   back-overrides -c back-overrides.json
+   # Recommended (no installation required):
+   npx @back-overrides/cli
+
+   # In this monorepo:
+   npm start
+
+   # Or using your package manager of choice:
+   pnpm dlx @back-overrides/cli
+   bunx @back-overrides/cli
    ```
-2. The extension automatically syncs with the CLI (`http://localhost:8888`) upon startup.
-3. If you edit rules in your JSON file, open the extension popup and click:
-   **"🔄 Sincronizar com CLI (localhost:8888)"** (or use the automatic refresh).
+2. **1-Click Launch Helper Card (CLI Offline):** If the CLI proxy is not yet running, both the popup and Studio display an interactive card with 1-click preset command buttons (`📋 Copy`).
+3. **Real-Time Auto-Detection & Auto-Sync:** While the popup is open, it checks the local proxy every 2 seconds. The moment the CLI starts in your terminal, the extension transitions to green and synchronizes all active rules automatically without manual refresh!
+4. **Manual Sync:** Whenever you modify rules in `back-overrides.json`, click **"🔄 Sincronizar com CLI"** in the popup or Studio anytime.
 
 ---
 

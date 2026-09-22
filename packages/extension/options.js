@@ -35,6 +35,26 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnSaveStorage = document.getElementById('btn-save-storage');
   const toastContainer = document.getElementById('toast-container');
 
+  // Elements - CLI Launch Guide
+  const studioCmdSelector = document.getElementById('studio-cmd-selector');
+  const customCmdWrapper = document.getElementById('custom-cmd-wrapper');
+  const customCliInput = document.getElementById('custom-cli-input');
+  const btnSaveCustomCmd = document.getElementById('btn-save-custom-cmd');
+  const studioCmdDisplay = document.getElementById('studio-cmd-display');
+  const btnCopyStudioCmd = document.getElementById('btn-copy-studio-cmd');
+  const studioStatusDot = document.getElementById('studio-status-dot');
+  const studioStatusLabel = document.getElementById('studio-status-label');
+
+  const CLI_COMMAND_PRESETS = {
+    npx: 'npx @back-overrides/cli',
+    npm: 'npm start',
+    pnpm: 'pnpm dlx @back-overrides/cli',
+    bun: 'bunx @back-overrides/cli',
+    custom: '',
+  };
+  let activeCmdPreset = 'npx';
+  let customCmdValue = '';
+
   // Application State
   let rules = [];
   let selectedMethods = ['*'];
@@ -578,6 +598,8 @@ ${autoPolling ? '  setInterval(refreshRules, 5000);' : '  // Polling desativado'
       if (res.ok) {
         cliStatusDot.className = 'status-dot online';
         cliStatusText.textContent = `CLI: ${targetUrl.replace(/^https?:\/\//, '')} (Online)`;
+        if (studioStatusDot) studioStatusDot.className = 'status-dot online';
+        if (studioStatusLabel) studioStatusLabel.textContent = 'CLI Online';
         return;
       }
     } catch {
@@ -586,15 +608,102 @@ ${autoPolling ? '  setInterval(refreshRules, 5000);' : '  // Polling desativado'
 
     cliStatusDot.className = 'status-dot offline';
     cliStatusText.textContent = `CLI: ${targetUrl.replace(/^https?:\/\//, '')} (Offline)`;
+    if (studioStatusDot) studioStatusDot.className = 'status-dot offline';
+    if (studioStatusLabel) studioStatusLabel.textContent = 'CLI Offline';
   }
+
+  // 11. CLI Launch Guide Handlers
+  function updateStudioCmdDisplay() {
+    if (studioCmdSelector) {
+      studioCmdSelector.querySelectorAll('.studio-cmd-btn').forEach((btn) => {
+        if (btn.dataset.cmd === activeCmdPreset) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    if (activeCmdPreset === 'custom') {
+      customCmdWrapper?.classList.remove('hidden');
+      if (studioCmdDisplay) {
+        studioCmdDisplay.textContent = customCmdValue || 'node packages/cli/dist/cli.js -c back-overrides.json';
+      }
+    } else {
+      customCmdWrapper?.classList.add('hidden');
+      if (studioCmdDisplay) {
+        studioCmdDisplay.textContent = CLI_COMMAND_PRESETS[activeCmdPreset] || CLI_COMMAND_PRESETS.npx;
+      }
+    }
+  }
+
+  studioCmdSelector?.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.studio-cmd-btn');
+    if (!btn) return;
+    const preset = btn.dataset.cmd;
+    if (CLI_COMMAND_PRESETS[preset] !== undefined) {
+      activeCmdPreset = preset;
+      updateStudioCmdDisplay();
+      await chrome.storage.local.set({ cliCmdPreset: activeCmdPreset });
+    }
+  });
+
+  btnSaveCustomCmd?.addEventListener('click', async () => {
+    const val = customCliInput ? customCliInput.value.trim() : '';
+    if (!val) {
+      showToast('Digite um comando válido para salvar.', 'warning');
+      return;
+    }
+    customCmdValue = val;
+    await chrome.storage.local.set({ customCliCmd: customCmdValue });
+    updateStudioCmdDisplay();
+    showToast('Comando personalizado salvo com sucesso!');
+  });
+
+  btnCopyStudioCmd?.addEventListener('click', async () => {
+    const cmd = studioCmdDisplay ? studioCmdDisplay.textContent.trim() : 'npx @back-overrides/cli';
+    try {
+      await navigator.clipboard.writeText(cmd);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = cmd;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+
+    btnCopyStudioCmd.textContent = '✅ Copiado!';
+    btnCopyStudioCmd.classList.add('copied');
+    showToast('Comando copiado para a área de transferência!');
+
+    setTimeout(() => {
+      btnCopyStudioCmd.textContent = '📋 Copiar';
+      btnCopyStudioCmd.classList.remove('copied');
+    }, 2000);
+  });
 
   // Storage Persistence Loader
   async function loadStoredState() {
     try {
-      const data = await chrome.storage.local.get(['studioRules', 'cliUrl']);
+      const data = await chrome.storage.local.get([
+        'studioRules',
+        'cliUrl',
+        'cliCmdPreset',
+        'customCliCmd',
+      ]);
       if (data.cliUrl) {
         optCliUrl.value = data.cliUrl;
       }
+      if (data.cliCmdPreset && CLI_COMMAND_PRESETS[data.cliCmdPreset] !== undefined) {
+        activeCmdPreset = data.cliCmdPreset;
+      }
+      if (data.customCliCmd) {
+        customCmdValue = data.customCliCmd;
+        if (customCliInput) customCliInput.value = customCmdValue;
+      }
+      updateStudioCmdDisplay();
+
       if (data.studioRules && Array.isArray(data.studioRules) && data.studioRules.length > 0) {
         rules = data.studioRules;
       } else {

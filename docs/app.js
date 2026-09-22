@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initPlayground();
   initScrollSpy();
   initMobileMenu();
+  initExtensionPopupMockup();
 });
 
 // Translation dictionary
@@ -141,6 +142,16 @@ const TRANSLATIONS = {
     ext_c5_desc: 'O <code>content-script.js</code> faz patch em <code>window.fetch</code> preservando o header <code>Authorization: Bearer &lt;token&gt;</code> e cookies mesmo durante redirecionamentos entre origens (cross-origin).',
     ext_c6_title: 'Reload Instantâneo (1 Clique)',
     ext_c6_desc: 'Botões integrados no Studio para disparar <code>chrome.runtime.reload()</code> (reinicia a extensão sem ir em <code>chrome://extensions</code>) e <code>chrome.tabs.reload()</code> na aba ativa.',
+    ext_c7_title: 'Assistente de Inicialização do CLI',
+    ext_c7_desc: 'Quando o CLI estiver offline, o popup e o Studio exibem um card inteligente com comandos em 1 clique (<code>npx</code>, <code>npm start</code>, <code>pnpm dlx</code>, <code>bunx</code>) e dicas de flags úteis.',
+    ext_c8_title: 'Auto-Detecção e Auto-Sincronização',
+    ext_c8_desc: 'Monitoramento em tempo real a cada 2 segundos no popup: ao rodar o comando no terminal, o status transiciona para verde e as regras ativas são sincronizadas automaticamente sem recarregar!',
+    ext_widget_title: '⚡ Prévia Interativa: Assistente de Inicialização no Popup',
+    ext_widget_desc: 'Experimente abaixo como o popup da extensão se comporta quando o CLI está offline, permitindo copiar o comando em 1 clique e alternar entre diferentes gerenciadores:',
+    ext_demo_waiting: 'Aguardando inicialização no terminal...',
+    ext_demo_flags_title: '💡 Dicas de flags úteis',
+    ext_demo_sim_online: '🔄 Simular CLI Iniciado no Terminal',
+    ext_demo_sim_offline: '⏹️ Simular CLI Parado (Offline)',
     ext_example_title: 'Como Funciona: Interceptador In-Page (content-script.js)',
     ext_example_desc: 'O gerador do BackOverrides Studio cria um <code>content-script.js</code> que monitora as chamadas de rede no contexto da página:',
     mcp_tag: '🤖 Inteligência Artificial',
@@ -321,6 +332,16 @@ const TRANSLATIONS = {
     ext_c5_desc: 'The <code>content-script.js</code> patches <code>window.fetch</code> to preserve the <code>Authorization: Bearer &lt;token&gt;</code> header and credentials even during cross-origin redirects.',
     ext_c6_title: 'Instant 1-Click Reload',
     ext_c6_desc: 'Integrated Studio buttons to trigger <code>chrome.runtime.reload()</code> (restarts the extension without visiting <code>chrome://extensions</code>) and <code>chrome.tabs.reload()</code> on the active tab.',
+    ext_c7_title: 'CLI Quick Launch Assistant',
+    ext_c7_desc: 'When the CLI proxy is offline, the popup and Studio display an interactive card with 1-click copyable commands (<code>npx</code>, <code>npm start</code>, <code>pnpm dlx</code>, <code>bunx</code>) and flag tips.',
+    ext_c8_title: 'Real-Time Auto-Detection & Auto-Sync',
+    ext_c8_desc: 'Live 2-second polling in popup: as soon as you run the command in your terminal and the proxy starts, the status turns green and rules are synced instantly without manual refresh!',
+    ext_widget_title: '⚡ Interactive Preview: Popup Quick Launch Assistant',
+    ext_widget_desc: 'Test below how the extension popup reacts when the CLI is offline, allowing 1-click command copying and switching between package managers:',
+    ext_demo_waiting: 'Waiting for terminal startup...',
+    ext_demo_flags_title: '💡 Useful CLI flag tips',
+    ext_demo_sim_online: '🔄 Simulate CLI Started in Terminal',
+    ext_demo_sim_offline: '⏹️ Simulate CLI Stopped (Offline)',
     ext_example_title: 'How It Works: In-Page Interceptor (content-script.js)',
     ext_example_desc: 'The BackOverrides Studio generator produces a <code>content-script.js</code> that monitors network calls within the page context:',
     mcp_tag: '🤖 Artificial Intelligence',
@@ -837,3 +858,84 @@ function initMobileMenu() {
     }
   });
 }
+
+function initExtensionPopupMockup() {
+  const demoPills = document.getElementById('demo-cmd-pills');
+  const demoCode = document.getElementById('demo-cmd-code');
+  const demoCopyBtn = document.getElementById('demo-copy-btn');
+  const demoOfflineCard = document.getElementById('demo-offline-card');
+  const demoRulesContent = document.getElementById('demo-rules-content');
+  const demoStatusDot = document.getElementById('demo-status-dot');
+  const demoStatusText = document.getElementById('demo-status-text');
+  const demoToggleBtn = document.getElementById('demo-toggle-online');
+
+  if (!demoPills || !demoCode || !demoToggleBtn) return;
+
+  const COMMAND_PRESETS = {
+    npx: 'npx @back-overrides/cli',
+    npm: 'npm start',
+    pnpm: 'pnpm dlx @back-overrides/cli',
+    bun: 'bunx @back-overrides/cli',
+  };
+
+  demoPills.addEventListener('click', (e) => {
+    const btn = e.target.closest('.mockup-pill');
+    if (!btn) return;
+    const cmdKey = btn.dataset.cmd;
+    if (COMMAND_PRESETS[cmdKey]) {
+      demoPills.querySelectorAll('.mockup-pill').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      demoCode.textContent = COMMAND_PRESETS[cmdKey];
+    }
+  });
+
+  demoCopyBtn?.addEventListener('click', async () => {
+    const cmd = demoCode ? demoCode.textContent : 'npx @back-overrides/cli';
+    try {
+      await navigator.clipboard.writeText(cmd);
+    } catch {
+      const ta = document.createElement('textarea');
+      ta.value = cmd;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+    demoCopyBtn.textContent = '✅ Copiado!';
+    demoCopyBtn.classList.add('copied');
+    setTimeout(() => {
+      demoCopyBtn.textContent = '📋 Copiar';
+      demoCopyBtn.classList.remove('copied');
+    }, 2000);
+  });
+
+  let isOnline = false;
+
+  demoToggleBtn.addEventListener('click', () => {
+    isOnline = !isOnline;
+
+    if (isOnline) {
+      demoOfflineCard.classList.add('hidden');
+      demoStatusDot.className = 'mockup-status-dot online';
+      demoStatusText.textContent = 'CLI: localhost:8888 (Ativo)';
+      demoRulesContent.innerHTML = `
+        <div class="mockup-rule-item">
+          <div class="mockup-rule-src">De: ^https://api.cloud.io/bff/v1/(.*)</div>
+          <div class="mockup-rule-tgt">Para: http://localhost:8888/bff/v1/$1</div>
+        </div>
+        <div class="mockup-rule-item">
+          <div class="mockup-rule-src">De: ^https://api.cloud.io/oauth2/(.*)</div>
+          <div class="mockup-rule-tgt">Para: http://localhost:8888/oauth2/$1</div>
+        </div>
+      `;
+      demoToggleBtn.textContent = currentLang === 'en' ? '⏹️ Simulate CLI Stopped (Offline)' : '⏹️ Simular CLI Parado (Offline)';
+    } else {
+      demoOfflineCard.classList.remove('hidden');
+      demoStatusDot.className = 'mockup-status-dot offline';
+      demoStatusText.textContent = 'CLI: localhost:8888 (Offline)';
+      demoRulesContent.innerHTML = '<span style="color: #64748b;">CLI offline. Inicie o proxy para sincronizar.</span>';
+      demoToggleBtn.textContent = currentLang === 'en' ? '🔄 Simulate CLI Started in Terminal' : '🔄 Simular CLI Iniciado no Terminal';
+    }
+  });
+}
+

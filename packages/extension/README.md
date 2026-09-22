@@ -33,15 +33,23 @@ Esta extensão intercepta requisições de rede diretamente na camada de rede do
 
 ---
 
-## 🔄 Sincronização com o CLI & Studio
+## 🔄 Sincronização com o CLI & Assistente de Inicialização
 
-1. Inicie o BackOverrides CLI normalmente:
+1. Inicie o BackOverrides CLI no terminal do seu projeto:
    ```bash
-   back-overrides -c back-overrides.json
+   # Opção recomendada (sem instalação prévia):
+   npx @back-overrides/cli
+
+   # No monorepo do projeto:
+   npm start
+
+   # Ou usando seu gerenciador favorito:
+   pnpm dlx @back-overrides/cli
+   bunx @back-overrides/cli
    ```
-2. A extensão sincroniza automaticamente com o CLI (`http://localhost:8888`) ao carregar.
-3. Se você alterar regras no arquivo JSON, abra o popup da extensão e clique em:
-   **"🔄 Sincronizar com CLI (localhost:8888)"**.
+2. **Card de Inicialização em 1 Clique (CLI Offline):** Se o CLI ainda não estiver rodando, o popup e o Studio exibem um card interativo com botões para alternar e copiar o comando com 1 clique (`📋 Copiar`).
+3. **Auto-Detecção e Auto-Sincronização em Tempo Real:** Enquanto o popup estiver aberto, a extensão monitora o status a cada 2 segundos. Assim que o comando for executado no terminal, o status transiciona automaticamente para verde e as regras ativas são sincronizadas sem requerer refresh manual!
+4. **Sincronização Manual:** Caso altere regras no arquivo `back-overrides.json`, clique em **"🔄 Sincronizar com CLI"** no popup ou no Studio a qualquer momento.
 
 ---
 
