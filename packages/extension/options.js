@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Elements - Generator & Code Box
   const optCliUrl = document.getElementById('opt-cli-url');
+  const optTargetDomains = document.getElementById('opt-target-domains');
   const optEmbedRules = document.getElementById('opt-embed-rules');
   const optAutoPolling = document.getElementById('opt-auto-polling');
   const optDebugLogs = document.getElementById('opt-debug-logs');
@@ -33,6 +34,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnCopyCode = document.getElementById('btn-copy-code');
   const btnDownloadCode = document.getElementById('btn-download-code');
   const btnSaveStorage = document.getElementById('btn-save-storage');
+  const btnPushCli = document.getElementById('btn-push-cli');
+  const btnPushRulesCli = document.getElementById('btn-push-rules-cli');
   const toastContainer = document.getElementById('toast-container');
 
   // Elements - CLI Launch Guide
@@ -60,24 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   let selectedMethods = ['*'];
   let editingRuleId = null;
 
-  const DEFAULT_RULES = [
-    {
-      id: 'default-oauth',
-      source: 'https://api.corporate-cloud.io/bff/core/v1/oauth2/',
-      target: 'http://localhost:8888/bff/core/v1/oauth2/',
-      methods: ['*'],
-      description: 'Redireciona todo o fluxo OAuth2 para o proxy local',
-      enabled: true,
-    },
-    {
-      id: 'default-logout',
-      source: 'https://api.corporate-cloud.io/bff/core/v1/logout',
-      target: 'http://localhost:8888/bff/core/v1/logout',
-      methods: ['*'],
-      description: 'Redireciona logout dedicado para o proxy local',
-      enabled: true,
-    },
-  ];
+  const DEFAULT_RULES = [];
 
   // Initialize
   await loadStoredState();
@@ -335,7 +321,30 @@ document.addEventListener('DOMContentLoaded', async () => {
           rules = imported;
           renderRules();
           updateCodePreview();
-          showToast(`Sucesso! ${imported.length} regra(s) importada(s) do CLI.`);
+
+          // Auto-save to storage so declarativeNetRequest updates immediately
+          try {
+            const convertedRules = rules
+              .filter((r) => r.enabled)
+              .map((r) => {
+                const escapedSource = r.source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                return {
+                  sourceRegex: `^${escapedSource}(.*)`,
+                  targetPattern: `${r.target}\\1`,
+                  methods: r.methods.includes('*') ? [] : r.methods,
+                };
+              });
+            await chrome.storage.local.set({
+              rules: convertedRules,
+              cliUrl,
+              studioRules: rules,
+            });
+            chrome.runtime.sendMessage({ type: 'SYNC_FROM_CLI', cliUrl });
+          } catch {
+            // ignore
+          }
+
+          showToast(`Sucesso! ${imported.length} regra(s) importada(s) e aplicadas!`, 'success');
           checkCliStatus();
           return;
         }
@@ -349,6 +358,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 5. Code Generator Engine
   function generateContentScriptCode() {
     const cliUrl = optCliUrl.value.trim() || 'http://localhost:8888';
+    const rawDomains = optTargetDomains ? optTargetDomains.value : '';
+    const parsedDomains = rawDomains
+      .split(',')
+      .map((d) => d.trim().toLowerCase())
+      .filter(Boolean);
+    const finalTargetDomains = parsedDomains;
+
     const embedRules = optEmbedRules.checked;
     const autoPolling = optAutoPolling.checked;
     const debugLogs = optDebugLogs.checked;
@@ -373,6 +389,35 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 (function () {
   let cliUrl = '${escapeJsString(cliUrl)}';
+  let targetDomains = ${JSON.stringify(finalTargetDomains, null, 4)};
+
+  const currentHost = (window.location.host || '').toLowerCase();
+  const currentHostname = (window.location.hostname || '').toLowerCase();
+
+  function isDomainActive() {
+    return targetDomains.some((d) => {
+      const clean = d.trim().toLowerCase();
+      if (!clean) return false;
+      return currentHostname === clean || currentHost === clean || currentHostname.endsWith('.' + clean);
+    });
+  }
+
+  // Standby mode check: do not intercept anything outside target domains
+  if (!isDomainActive()) {
+    console.debug(
+      \`%c⏸️ [BackOverrides Extension]%c Modo Standby: Domínio '\${currentHost || 'desconhecido'}' fora do escopo de ativação.\`,
+      'color: #94a3b8; font-weight: bold;',
+      'color: inherit;'
+    );
+    return;
+  }
+
+  console.log(
+    \`%c⚡ [BackOverrides Extension]%c Ativo em '\${currentHost}'! Monitorando e redirecionando endpoints...\`,
+    'color: #00d2ff; font-weight: bold;',
+    'color: inherit;'
+  );
+
   let rules = ${rulesArrayJs};
 
   const originalFetch = window.fetch;
@@ -385,6 +430,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       if (res.ok) {
         const config = await res.json();
+        if (config.targetDomains && Array.isArray(config.targetDomains) && config.targetDomains.length > 0) {
+          targetDomains = config.targetDomains;
+        }
         const remote = (config.remote || '').replace(/\\/+$/, '');
         const localCli = \`http://localhost:\${config.port || 8888}\`;
         if (config.overrides && Array.isArray(config.overrides)) {
@@ -405,6 +453,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function rewriteUrl(urlStr) {
     if (!urlStr || typeof urlStr !== 'string') return urlStr;
     if (urlStr.includes('/__back-overrides/')) return urlStr;
+    if (urlStr.includes('localhost:8888') || urlStr.includes('127.0.0.1:8888')) return urlStr;
 
     for (const rule of rules) {
       if (urlStr.startsWith(rule.source)) {
@@ -484,7 +533,7 @@ ${autoPolling ? '  setInterval(refreshRules, 5000);' : '  // Polling desativado'
   }
 
   // React to generator toggles
-  [optCliUrl, optEmbedRules, optAutoPolling, optDebugLogs].forEach((el) => {
+  [optCliUrl, optTargetDomains, optEmbedRules, optAutoPolling, optDebugLogs].filter(Boolean).forEach((el) => {
     el.addEventListener('input', updateCodePreview);
     el.addEventListener('change', updateCodePreview);
   });
@@ -526,9 +575,16 @@ ${autoPolling ? '  setInterval(refreshRules, 5000);' : '  // Polling desativado'
     showToast('Download de content-script.js iniciado!');
   });
 
-  // 8. Save to Extension Storage
+  // 8. Save to Extension Storage & Push to CLI
   btnSaveStorage.addEventListener('click', async () => {
     try {
+      const rawDomains = optTargetDomains ? optTargetDomains.value : '';
+      const parsedDomains = rawDomains
+        .split(',')
+        .map((d) => d.trim().toLowerCase())
+        .filter(Boolean);
+      const targetDomains = parsedDomains;
+
       // Convert our rules to declarativeNetRequest / background format
       const convertedRules = rules
         .filter((r) => r.enabled)
@@ -545,13 +601,34 @@ ${autoPolling ? '  setInterval(refreshRules, 5000);' : '  // Polling desativado'
         rules: convertedRules,
         cliUrl: optCliUrl.value.trim() || 'http://localhost:8888',
         studioRules: rules,
+        targetDomains,
       });
 
-      showToast('Regras salvas na extensão com sucesso!', 'success');
+      chrome.runtime.sendMessage({ type: 'PUSH_RULES_TO_CLI' }, (res) => {
+        if (res && res.success) {
+          showToast(`Regras salvas e ${res.count} regra(s) enviadas ao CLI com sucesso!`, 'success');
+        } else {
+          showToast('Regras salvas na extensão! (CLI proxy offline)', 'success');
+        }
+      });
     } catch (err) {
       showToast(`Erro ao salvar no storage: ${err.message}`, 'error');
     }
   });
+
+  function handlePushToCli() {
+    showToast('Enviando regras para o proxy CLI...', '');
+    chrome.runtime.sendMessage({ type: 'PUSH_RULES_TO_CLI' }, (res) => {
+      if (res && res.success) {
+        showToast(`✅ Sucesso! ${res.count} regra(s) enviadas ao proxy CLI.`, 'success');
+      } else {
+        showToast(`Falha ao enviar ao CLI: ${res?.error || 'CLI offline'}`, 'error');
+      }
+    });
+  }
+
+  btnPushCli?.addEventListener('click', handlePushToCli);
+  btnPushRulesCli?.addEventListener('click', handlePushToCli);
 
   // 9. RELOAD BUTTONS (The core requirement)
   // Button: Reload Extension
@@ -691,7 +768,11 @@ ${autoPolling ? '  setInterval(refreshRules, 5000);' : '  // Polling desativado'
         'cliUrl',
         'cliCmdPreset',
         'customCliCmd',
+        'targetDomains',
       ]);
+      if (data.targetDomains && Array.isArray(data.targetDomains) && data.targetDomains.length > 0) {
+        if (optTargetDomains) optTargetDomains.value = data.targetDomains.join(', ');
+      }
       if (data.cliUrl) {
         optCliUrl.value = data.cliUrl;
       }

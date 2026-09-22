@@ -25,6 +25,9 @@
 
     <!-- Header Action Toolbar -->
     <div class="header-actions">
+      <button class="btn-action btn-sync-cli" id="btn-push-cli" title="Enviar regras da extensão para o CLI proxy" style="background: #0d9488; border-color: #14b8a6; color: white;">
+        📤 Enviar ao CLI
+      </button>
       <button class="btn-action btn-sync-cli" id="btn-sync-cli" title="Puxar regras atualizadas do CLI local">
         🔄 Sincronizar CLI
       </button>
@@ -101,6 +104,9 @@
             <span class="count-badge" id="rules-count-badge">0</span>
           </div>
           <div style="display: flex; gap: 8px;">
+            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px; color: #2dd4bf; border-color: #0d9488;" id="btn-push-rules-cli" title="Enviar regras cadastradas para o CLI proxy">
+              📤 Enviar ao CLI
+            </button>
             <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px;" id="btn-import-cli">
               📥 Importar CLI
             </button>
@@ -203,6 +209,14 @@
           <div class="form-group" style="margin-bottom: 8px;">
             <label class="form-label" for="opt-cli-url">URL Base do CLI Proxy</label>
             <input type="text" id="opt-cli-url" class="form-input" value="http://localhost:8888">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label class="form-label" for="opt-target-domains">Domínios de Ativação / Modo Standby (separados por vírgula)</label>
+            <input type="text" id="opt-target-domains" class="form-input" placeholder="ex: app.empresa.com, localhost:4200" value="">
+            <span style="font-size: 11px; color: var(--text-muted); display: block; margin-top: 4px;">
+              A extensão só intercepta requisições nestes domínios. Em qualquer outro site, a extensão permanece em <strong>Standby</strong>.
+            </span>
           </div>
 
           <div class="option-toggle">

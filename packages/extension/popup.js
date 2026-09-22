@@ -9,6 +9,82 @@ document.addEventListener('DOMContentLoaded', async () => {
   const cmdPillsContainer = document.getElementById('cmd-pills');
   const cmdCodeDisplay = document.getElementById('cmd-code-display');
   const btnCopyCmd = document.getElementById('btn-copy-cmd');
+  const domainCard = document.getElementById('domain-card');
+  const domainLabel = document.getElementById('domain-label');
+  const domainHost = document.getElementById('domain-host');
+  const btnToggleDomain = document.getElementById('btn-toggle-domain');
+  const btnPushCli = document.getElementById('btn-push-cli');
+
+  let currentTabHost = '';
+  let currentTabHostname = '';
+  let currentTargetDomains = [];
+
+  async function checkActiveTabDomain() {
+    try {
+      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+      const activeTab = tabs && tabs[0] ? tabs[0] : null;
+      if (!activeTab || !activeTab.url || !activeTab.url.startsWith('http')) {
+        if (domainHost) domainHost.textContent = 'Página interna / sem URL';
+        if (domainLabel) domainLabel.textContent = 'Modo Standby';
+        if (domainCard) domainCard.className = 'domain-card standby';
+        if (btnToggleDomain) btnToggleDomain.style.display = 'none';
+        return;
+      }
+
+      const urlObj = new URL(activeTab.url);
+      currentTabHost = (urlObj.host || '').toLowerCase();
+      currentTabHostname = (urlObj.hostname || '').toLowerCase();
+
+      const stored = await chrome.storage.local.get(['targetDomains']);
+      if (stored.targetDomains && Array.isArray(stored.targetDomains)) {
+        currentTargetDomains = stored.targetDomains;
+      }
+
+      const isActive = currentTargetDomains.length > 0 && currentTargetDomains.some((d) => {
+        const clean = d.trim().toLowerCase();
+        if (!clean) return false;
+        return currentTabHostname === clean || currentTabHost === clean || currentTabHostname.endsWith('.' + clean);
+      });
+
+      if (domainHost) domainHost.textContent = currentTabHost;
+      if (domainCard) domainCard.className = isActive ? 'domain-card active' : 'domain-card standby';
+      if (domainLabel) domainLabel.textContent = isActive ? '🟢 Ativo neste domínio' : '⏸️ Modo Standby (Inativo)';
+      if (btnToggleDomain) {
+        btnToggleDomain.style.display = 'block';
+        btnToggleDomain.textContent = isActive ? 'Desativar' : '+ Ativar';
+        btnToggleDomain.title = isActive
+          ? `Remover ${currentTabHost} dos domínios monitorados`
+          : `Adicionar ${currentTabHost} aos domínios monitorados`;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  btnToggleDomain?.addEventListener('click', () => {
+    if (!currentTabHostname) return;
+    const domainToToggle = currentTabHost.includes(':') ? currentTabHost : currentTabHostname;
+    chrome.runtime.sendMessage({ type: 'TOGGLE_TARGET_DOMAIN', domain: domainToToggle }, (res) => {
+      if (res && res.success) {
+        showStatus(res.active ? `Domínio ${domainToToggle} ativado!` : `Domínio ${domainToToggle} em standby.`, 'success');
+        checkActiveTabDomain();
+      }
+    });
+  });
+
+  btnPushCli?.addEventListener('click', () => {
+    showStatus('Enviando regras da extensão para o CLI...', '');
+    btnPushCli.disabled = true;
+    chrome.runtime.sendMessage({ type: 'PUSH_RULES_TO_CLI' }, (res) => {
+      btnPushCli.disabled = false;
+      if (res && res.success) {
+        showStatus(`✅ ${res.count} regras enviadas com sucesso ao CLI!`, 'success');
+        updatePortDisplay(data.cliUrl || 'http://localhost:8888', true);
+      } else {
+        showStatus(`Falha ao enviar: ${res?.error || 'CLI offline'}`, 'error');
+      }
+    });
+  });
 
   const COMMAND_PRESETS = {
     npx: 'npx @back-overrides/cli',
@@ -24,8 +100,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     'cliUrl',
     'cliCmdPreset',
     'customCliCmd',
+    'targetDomains',
   ]);
 
+  await checkActiveTabDomain();
   toggle.checked = data.enabled !== undefined ? data.enabled : true;
   renderRules(data.rules || []);
   updatePortDisplay(data.cliUrl || 'http://localhost:8888', true);
@@ -90,6 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   let lastOnlineState = null;
 
   function checkLiveCli(isInitial = false) {
+    checkActiveTabDomain();
     chrome.runtime.sendMessage({ type: 'GET_CLI_STATUS' }, (res) => {
       if (chrome.runtime.lastError) {
         return;
