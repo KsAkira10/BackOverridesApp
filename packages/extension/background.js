@@ -3,13 +3,9 @@
 const DEFAULT_CONFIG = {
   enabled: true,
   cliUrl: 'http://localhost:8888',
-  rules: [
-    {
-      sourceRegex: '^https?:\\/\\/api\\.corporate-cloud\\.io\\/bff\\/core\\/v1(.*)',
-      targetPattern: 'http://localhost:8888/bff/core/v1\\1',
-      methods: [], // empty = all methods
-    },
-  ],
+  targetDomains: [],
+  rules: [],
+  studioRules: [],
 };
 
 let isSyncing = false;
@@ -23,7 +19,7 @@ async function syncDynamicRules() {
   isSyncing = true;
 
   try {
-    const data = await chrome.storage.local.get(['enabled', 'rules', 'cliUrl']);
+    const data = await chrome.storage.local.get(['enabled', 'rules', 'cliUrl', 'targetDomains']);
     const isEnabled = data.enabled !== undefined ? data.enabled : DEFAULT_CONFIG.enabled;
     const rules = data.rules || DEFAULT_CONFIG.rules;
 
@@ -49,6 +45,13 @@ async function syncDynamicRules() {
       const redirectRuleId = ruleIdCounter++;
       const corsRuleId = ruleIdCounter++;
 
+      // Extract destination domain from source regex to strictly isolate DNR to target API
+      let requestDomains = undefined;
+      const domainMatch = rule.sourceRegex ? rule.sourceRegex.match(/https?:\\\/\\\/([a-zA-Z0-9.-]+)/) : null;
+      if (domainMatch && domainMatch[1]) {
+        requestDomains = [domainMatch[1].replace(/\\/g, '')];
+      }
+
       // 1. Redirect Rule - Supports both async calls (xmlhttprequest) and full-page navigations (main_frame)
       newRules.push({
         id: redirectRuleId,
@@ -63,29 +66,29 @@ async function syncDynamicRules() {
           regexFilter: rule.sourceRegex,
           resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'other'],
           requestMethods: rule.methods && rule.methods.length > 0 ? rule.methods.map((m) => m.toLowerCase()) : undefined,
+          requestDomains: requestDomains,
         },
       });
 
-      // 2. CORS Response Header Modification
+      // 2. CORS Response Header Modification - ensures Private Network Access is allowed without origin collision
       newRules.push({
         id: corsRuleId,
         priority: 1,
         action: {
           type: 'modifyHeaders',
           responseHeaders: [
-            { header: 'access-control-allow-origin', operation: 'set', value: '*' },
-            { header: 'access-control-allow-credentials', operation: 'set', value: 'true' },
+            { header: 'access-control-allow-private-network', operation: 'set', value: 'true' },
             {
               header: 'access-control-allow-methods',
               operation: 'set',
               value: 'GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD',
             },
-            { header: 'access-control-allow-headers', operation: 'set', value: '*' },
           ],
         },
         condition: {
           regexFilter: rule.sourceRegex,
           resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'other'],
+          requestDomains: requestDomains,
         },
       });
     }
@@ -190,10 +193,23 @@ async function fetchConfigWithFallback(preferredUrl) {
 function convertRules(config, cliUrl) {
   const remoteUrl = (config.remote || '').replace(/\/+$/, '');
   const targetBase = (cliUrl || 'http://localhost:8888').replace(/\/+$/, '');
-  const escapedRemote = remoteUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  let escapedRemote = remoteUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  if (escapedRemote.startsWith('https:\\/\\/')) {
+    escapedRemote = escapedRemote.replace(/^https:\\\/\\\//, 'https?:\\/\\/');
+  } else if (escapedRemote.startsWith('http:\\/\\/')) {
+    escapedRemote = escapedRemote.replace(/^http:\\\/\\\//, 'https?:\\/\\/');
+  }
 
   return (config.overrides || []).map((o) => {
-    const cleanPath = (o.path || '').replace(/\*$/, '(.*)');
+    let cleanPath = o.path || '';
+    if (cleanPath.endsWith('/*')) {
+      cleanPath = cleanPath.slice(0, -2) + '/(.*)';
+    } else if (cleanPath.endsWith('*')) {
+      cleanPath = cleanPath.slice(0, -1) + '(.*)';
+    } else {
+      cleanPath = cleanPath + '(.*)';
+    }
+
     const sourceRegex = `^${escapedRemote}${cleanPath}`;
     const targetPattern = `${targetBase}${cleanPath.replace(/\(\.\*\)$/, '\\1')}`;
 
@@ -205,11 +221,88 @@ function convertRules(config, cliUrl) {
   });
 }
 
+function convertStudioRulesToCliPayload(studioRules, preferredLocal = 'http://localhost:3000', preferredRemote = 'https://api.example.com') {
+  const localTarget = preferredLocal || 'http://localhost:3000';
+  const remoteTarget = preferredRemote || 'https://api.example.com';
+
+  if (!Array.isArray(studioRules) || studioRules.length === 0) {
+    return {
+      remote: remoteTarget,
+      local: localTarget,
+      overrides: [],
+    };
+  }
+
+  const overrides = studioRules
+    .filter((r) => r.enabled !== false)
+    .map((r) => {
+      let cleanPath = r.source || '';
+      try {
+        if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
+          const u = new URL(cleanPath);
+          cleanPath = u.pathname;
+        }
+      } catch {}
+      if (!cleanPath.startsWith('/')) cleanPath = '/' + cleanPath;
+      if (!cleanPath.endsWith('*')) {
+        cleanPath = cleanPath.endsWith('/') ? cleanPath + '*' : cleanPath + '/*';
+      }
+
+      return {
+        methods: r.methods && r.methods.length > 0 ? r.methods : ['*'],
+        path: cleanPath,
+        description: r.description || `Override para ${cleanPath}`,
+      };
+    });
+
+  return {
+    remote: remoteTarget,
+    local: localTarget,
+    overrides,
+  };
+}
+
+async function pushRulesToCli(preferredCliUrl) {
+  const data = await chrome.storage.local.get(['cliUrl', 'studioRules', 'targetDomains']);
+  const targetUrl = (preferredCliUrl || data.cliUrl || 'http://localhost:8888').replace(/\/+$/, '');
+  const payload = convertStudioRulesToCliPayload(data.studioRules);
+  payload.targetDomains = data.targetDomains || DEFAULT_CONFIG.targetDomains;
+
+  const res = await fetch(`${targetUrl}/__back-overrides/rules`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text().catch(() => '');
+    throw new Error(`CLI respondeu com status ${res.status}: ${errorText}`);
+  }
+
+  const result = await res.json();
+  console.log(`[BackOverrides Extension] Enviadas ${result.count || payload.overrides.length} regra(s) para o CLI em ${targetUrl}.`);
+  return result;
+}
+
 async function autoSyncFromCli(preferredCliUrl) {
   try {
-    const stored = await chrome.storage.local.get(['cliUrl']);
+    const stored = await chrome.storage.local.get(['cliUrl', 'studioRules']);
     const targetUrl = preferredCliUrl || stored.cliUrl || 'http://localhost:8888';
     const { config, cliUrl } = await fetchConfigWithFallback(targetUrl);
+
+    // If CLI in the project has 0 overrides configured, push extension's stored rules to the CLI!
+    if (config && Array.isArray(config.overrides) && config.overrides.length === 0) {
+      console.log('[BackOverrides Extension] CLI possui 0 regras no projeto. Enviando regras da extensão para o CLI...');
+      try {
+        await pushRulesToCli(cliUrl);
+      } catch (pushErr) {
+        console.warn('[BackOverrides Extension] Não foi possível enviar regras ao CLI:', pushErr.message);
+      }
+    }
+
     const convertedRules = convertRules(config, cliUrl);
 
     if (convertedRules.length > 0 || config) {
@@ -224,9 +317,13 @@ async function autoSyncFromCli(preferredCliUrl) {
 
 chrome.runtime.onInstalled.addListener(async () => {
   try {
-    const data = await chrome.storage.local.get(['rules']);
-    if (!data.rules) {
-      await chrome.storage.local.set(DEFAULT_CONFIG);
+    const data = await chrome.storage.local.get(['rules', 'studioRules', 'targetDomains']);
+    const updates = {};
+    if (!data.rules) updates.rules = DEFAULT_CONFIG.rules;
+    if (!data.studioRules) updates.studioRules = DEFAULT_CONFIG.studioRules;
+    if (!data.targetDomains) updates.targetDomains = DEFAULT_CONFIG.targetDomains;
+    if (Object.keys(updates).length > 0) {
+      await chrome.storage.local.set(updates);
     }
     await autoSyncFromCli();
   } catch (err) {
@@ -241,12 +338,65 @@ chrome.runtime.onStartup?.addListener(() => {
 });
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === 'local' && (changes.enabled || changes.rules)) {
+  if (area === 'local' && (changes.enabled || changes.rules || changes.targetDomains)) {
     syncDynamicRules();
   }
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === 'PUSH_RULES_TO_CLI') {
+    (async () => {
+      try {
+        const stored = await chrome.storage.local.get(['cliUrl']);
+        const targetUrl = request.cliUrl || stored.cliUrl || 'http://localhost:8888';
+        const result = await pushRulesToCli(targetUrl);
+        await syncDynamicRules();
+        sendResponse({
+          success: true,
+          count: result.count !== undefined ? result.count : (result.config?.overrides?.length || 0),
+          config: result.config,
+        });
+      } catch (err) {
+        sendResponse({ success: false, error: err.message });
+      }
+    })();
+    return true; // async sendResponse
+  }
+
+  if (request.type === 'GET_TARGET_DOMAINS') {
+    (async () => {
+      const data = await chrome.storage.local.get(['targetDomains']);
+      sendResponse({ targetDomains: data.targetDomains || DEFAULT_CONFIG.targetDomains });
+    })();
+    return true;
+  }
+
+  if (request.type === 'TOGGLE_TARGET_DOMAIN') {
+    (async () => {
+      try {
+        const domain = (request.domain || '').trim().toLowerCase();
+        if (!domain) {
+          sendResponse({ success: false, error: 'Domínio inválido' });
+          return;
+        }
+        const data = await chrome.storage.local.get(['targetDomains']);
+        let current = data.targetDomains || [...DEFAULT_CONFIG.targetDomains];
+        const exists = current.some((d) => d.toLowerCase() === domain);
+        if (exists) {
+          current = current.filter((d) => d.toLowerCase() !== domain);
+        } else {
+          current.push(domain);
+        }
+        await chrome.storage.local.set({ targetDomains: current });
+        await syncDynamicRules();
+        sendResponse({ success: true, active: !exists, targetDomains: current });
+      } catch (err) {
+        sendResponse({ success: false, error: err.message });
+      }
+    })();
+    return true;
+  }
+
   if (request.type === 'SYNC_FROM_CLI') {
     (async () => {
       try {

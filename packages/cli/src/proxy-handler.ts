@@ -28,6 +28,22 @@ export class ProxyHandler {
     return this.matcher;
   }
 
+  public updateConfig(newConfig: Partial<BackOverridesConfig>): void {
+    if (newConfig.overrides !== undefined) {
+      this.config.overrides = newConfig.overrides;
+    }
+    if (newConfig.remote !== undefined) {
+      this.config.remote = newConfig.remote;
+    }
+    if (newConfig.local !== undefined) {
+      this.config.local = newConfig.local;
+    }
+    if (newConfig.cors !== undefined) {
+      this.config.cors = newConfig.cors;
+    }
+    this.matcher = new RouteMatcher(this.config);
+  }
+
   private resolveClientScriptPath(format: 'iife' | 'esm' = 'iife'): string | null {
     try {
       const currentDir = path.dirname(fileURLToPath(import.meta.url));
@@ -68,7 +84,50 @@ export class ProxyHandler {
     }
 
     if (originalUrl === '/__back-overrides/rules') {
+      if (method === 'OPTIONS') {
+        const preflightHeaders = getCorsPreflightHeaders(this.config.cors, clientReq.headers);
+        clientRes.writeHead(204, preflightHeaders);
+        clientRes.end();
+        return;
+      }
+
       const corsHeaders = getCorsResponseHeaders(this.config.cors, clientReq.headers);
+
+      if (method === 'POST' || method === 'PUT') {
+        let body = '';
+        clientReq.on('data', (chunk) => {
+          body += chunk;
+        });
+        clientReq.on('end', () => {
+          try {
+            const data = JSON.parse(body);
+            this.updateConfig(data);
+            this.logger.info(`⚡ Regras atualizadas dinamicamente via extensão/API (${this.config.overrides?.length || 0} regras ativas)`);
+            clientRes.writeHead(200, {
+              'Content-Type': 'application/json',
+              ...corsHeaders,
+            });
+            clientRes.end(JSON.stringify({
+              success: true,
+              message: 'Configuração atualizada com sucesso',
+              count: this.config.overrides?.length || 0,
+              config: this.config,
+            }, null, 2));
+          } catch (err: unknown) {
+            const error = err as Error;
+            clientRes.writeHead(400, {
+              'Content-Type': 'application/json',
+              ...corsHeaders,
+            });
+            clientRes.end(JSON.stringify({
+              success: false,
+              error: `JSON inválido: ${error.message}`,
+            }));
+          }
+        });
+        return;
+      }
+
       clientRes.writeHead(200, {
         'Content-Type': 'application/json',
         ...corsHeaders,

@@ -121,6 +121,12 @@ export class Logger {
     }
   }
 
+  public info(msg: string): void {
+    if (this.isSilent) return;
+    const time = new Date().toLocaleTimeString();
+    console.log(`${pc.dim(time)} ${pc.cyan('⚡ [BackOverrides]')} ${msg}`);
+  }
+
   public verbose(label: string, data: unknown): void {
     if (this.isSilent || !this.isVerbose) return;
     console.log(pc.dim(`  [VERBOSE] ${label}:`));

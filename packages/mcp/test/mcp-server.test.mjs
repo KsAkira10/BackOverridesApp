@@ -38,7 +38,28 @@ describe('BackOverrides MCP Server & Tools', () => {
 
   describe('listRules', () => {
     it('reads configuration and decorates rules with resolved targets', async () => {
-      const result = await listRules(undefined, repoRoot);
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'back-overrides-mcp-rules-'));
+      const tempConfig = path.join(tempDir, 'back-overrides.json');
+
+      fs.writeFileSync(
+        tempConfig,
+        JSON.stringify({
+          port: 8888,
+          remote: 'https://api.example.com',
+          local: 'http://localhost:8080',
+          cors: { enabled: true },
+          overrides: [
+            {
+              path: '/bff/core/v1/oauth2/authorize',
+              methods: ['*'],
+              description: 'OAuth2 authorize rule',
+            },
+          ],
+        }, null, 2),
+        'utf-8'
+      );
+
+      const result = await listRules(tempConfig, repoRoot);
       assert.ok(result.configFile.endsWith('back-overrides.json'));
       assert.equal(typeof result.remote, 'string');
       assert.equal(typeof result.local, 'string');
@@ -50,6 +71,8 @@ describe('BackOverrides MCP Server & Tools', () => {
       assert.ok(firstRule.path);
       assert.ok(Array.isArray(firstRule.methods));
       assert.ok(firstRule.resolvedTarget);
+
+      fs.rmSync(tempDir, { recursive: true, force: true });
     });
   });
 
@@ -108,9 +131,31 @@ describe('BackOverrides MCP Server & Tools', () => {
 
   describe('testRoute', () => {
     it('correctly matches and simulates OAuth override route', async () => {
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'back-overrides-mcp-route-'));
+      const tempConfig = path.join(tempDir, 'back-overrides.json');
+
+      fs.writeFileSync(
+        tempConfig,
+        JSON.stringify({
+          port: 8888,
+          remote: 'https://api.example.com',
+          local: 'http://localhost:8080',
+          cors: { enabled: true },
+          overrides: [
+            {
+              path: '/bff/core/v1/oauth2/authorize',
+              methods: ['*'],
+              description: 'OAuth2 authorize rule',
+            },
+          ],
+        }, null, 2),
+        'utf-8'
+      );
+
       const matchTest = await testRoute({
-        url: 'https://api.corporate-cloud.io/bff/core/v1/oauth2/authorize',
+        url: '/bff/core/v1/oauth2/authorize',
         method: 'GET',
+        configPath: tempConfig,
         cwd: repoRoot,
       });
 
@@ -120,16 +165,19 @@ describe('BackOverrides MCP Server & Tools', () => {
       assert.ok(matchTest.explanation.includes('MATCHES rule'));
       assert.equal(matchTest.cors.enabled, true);
       assert.ok(matchTest.cors.sampleResponseHeaders['Access-Control-Allow-Origin']);
+
+      fs.rmSync(tempDir, { recursive: true, force: true });
     });
 
     it('identifies unmapped endpoints as passthrough to remote', async () => {
       const passthroughTest = await testRoute({
-        url: 'https://api.corporate-cloud.io/api/unmapped/resource/123',
+        url: '/api/unmapped/resource/123',
         method: 'GET',
         cwd: repoRoot,
       });
 
-      assert.equal(matchTestAction(passthroughTest), 'PASSTHROUGH_REMOTE');
+      assert.equal(passthroughTest.matched, false);
+      assert.equal(passthroughTest.action, 'PASSTHROUGH_REMOTE');
       assert.ok(passthroughTest.explanation.includes('does NOT match'));
     });
 

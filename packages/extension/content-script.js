@@ -6,20 +6,22 @@
 
 (function () {
   let cliUrl = 'http://localhost:8888';
-  let rules = [
-    {
-      source: 'https://api.corporate-cloud.io/bff/core/v1/oauth2/',
-      target: 'http://localhost:8888/bff/core/v1/oauth2/',
-    },
-    {
-      source: 'https://api.corporate-cloud.io/bff/core/v1/logout',
-      target: 'http://localhost:8888/bff/core/v1/logout',
-    },
-    {
-      source: '/bff/core/v1/oauth2/',
-      target: 'http://localhost:8888/bff/core/v1/oauth2/',
-    },
-  ];
+  let targetDomains = [];
+  let rules = [];
+
+  const currentHost = (window.location.host || '').toLowerCase();
+  const currentHostname = (window.location.hostname || '').toLowerCase();
+
+  function isDomainActive() {
+    if (!Array.isArray(targetDomains) || targetDomains.length === 0) {
+      return true;
+    }
+    return targetDomains.some((d) => {
+      const clean = d.trim().toLowerCase();
+      if (!clean) return false;
+      return currentHostname === clean || currentHost === clean || currentHostname.endsWith('.' + clean);
+    });
+  }
 
   const originalFetch = window.fetch;
   const originalOpen = XMLHttpRequest.prototype.open;
@@ -31,28 +33,40 @@
       });
       if (res.ok) {
         const config = await res.json();
+        if (config.targetDomains && Array.isArray(config.targetDomains) && config.targetDomains.length > 0) {
+          targetDomains = config.targetDomains;
+        }
         const remote = (config.remote || '').replace(/\/+$/, '');
         const localCli = `http://localhost:${config.port || 8888}`;
         if (config.overrides && Array.isArray(config.overrides)) {
-          rules = [];
+          const freshRules = [];
           for (const o of config.overrides) {
             const cleanPath = (o.path || '').replace(/\*$/, '');
             if (remote) {
-              rules.push({
+              freshRules.push({
                 source: `${remote}${cleanPath}`,
                 target: `${localCli}${cleanPath}`,
               });
+              if (remote.startsWith('https://')) {
+                freshRules.push({
+                  source: `${remote.replace(/^https:/, 'http:')}${cleanPath}`,
+                  target: `${localCli}${cleanPath}`,
+                });
+              }
             }
             if (typeof window !== 'undefined' && window.location && window.location.origin) {
-              rules.push({
+              freshRules.push({
                 source: `${window.location.origin}${cleanPath}`,
                 target: `${localCli}${cleanPath}`,
               });
             }
-            rules.push({
+            freshRules.push({
               source: cleanPath,
               target: `${localCli}${cleanPath}`,
             });
+          }
+          if (freshRules.length > 0) {
+            rules = freshRules;
           }
         }
       }
@@ -63,7 +77,10 @@
 
   function rewriteUrl(urlStr) {
     if (!urlStr || typeof urlStr !== 'string') return urlStr;
+    if (rules.length === 0) return urlStr;
+    if (!isDomainActive()) return urlStr;
     if (urlStr.includes('/__back-overrides/')) return urlStr;
+    if (urlStr.includes('localhost:8888') || urlStr.includes('127.0.0.1:8888')) return urlStr;
 
     for (const rule of rules) {
       if (urlStr.startsWith(rule.source)) {
